@@ -6,6 +6,8 @@
   <title>Elon Musk 推文合集</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    /* 白天模式（默认） */
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -14,6 +16,49 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      transition: background 0.5s ease;
+    }
+    
+    /* 夜间模式 */
+    body.night-mode {
+      background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    }
+    
+    body.night-mode .tweet-card {
+      background: #1a1a2e;
+      color: #eee;
+    }
+    
+    body.night-mode .tweet-content {
+      color: #eee;
+    }
+    
+    body.night-mode .tweet-translation {
+      color: #aaa;
+      border-top-color: #333;
+    }
+    
+    body.night-mode .tweet-time {
+      color: #888;
+    }
+    
+    body.night-mode .password-container {
+      background: #1a1a2e;
+      color: #eee;
+    }
+    
+    body.night-mode .password-container h2 {
+      color: #667eea;
+    }
+    
+    body.night-mode .password-container p {
+      color: #aaa;
+    }
+    
+    body.night-mode .password-input {
+      background: #0f0f23;
+      border-color: #333;
+      color: #eee;
     }
     
     /* 密码输入界面 */
@@ -336,12 +381,35 @@
       </div>
 
       <div class="update-time">
-        最后更新: 2026/4/5 20:06 | 含中英双语翻译
+        最后更新: 2026/4/5 20:06 | 含中英双语翻译 | ☀️🌙 自动切换主题
       </div>
     </div>
   </div>
 
   <script>
+    // 根据北京时间自动切换白天/黑夜模式
+    function updateTheme() {
+      const now = new Date();
+      // 转换为北京时间 (UTC+8)
+      const beijingTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Shanghai' }));
+      const hour = beijingTime.getHours();
+      
+      // 6:00-18:00 白天模式，其他时间夜间模式
+      if (hour >= 6 && hour < 18) {
+        document.body.classList.remove('night-mode');
+        console.log('☀️ 白天模式');
+      } else {
+        document.body.classList.add('night-mode');
+        console.log('🌙 夜间模式');
+      }
+    }
+    
+    // 页面加载时设置主题
+    updateTheme();
+    
+    // 每分钟检查一次（以防跨越时间界限）
+    setInterval(updateTheme, 60000);
+    
     // 密码验证 - SHA256 哈希后的密码: "musk2026"
     const correctPasswordHash = "f930e80174d069bfa09469f79568458e3311978264039f6abcb66ffd0c91c46d";
     
