@@ -132,7 +132,7 @@
       position: relative;
     }
     
-    /* 中间竖线 */
+    /* 中间竖线 - 纯色不渐变 */
     .year-group::before {
       content: '';
       position: absolute;
@@ -140,12 +140,8 @@
       top: 40px;
       bottom: 0;
       width: 2px;
-      background: linear-gradient(to bottom, #667eea, transparent);
+      background: #667eea;
       transform: translateX(-50%);
-    }
-    
-    .year-group:last-child::before {
-      background: linear-gradient(to bottom, #667eea, #ddd);
     }
     
     /* 年份标题（居中） */
@@ -183,27 +179,44 @@
       padding: 6px 8px;
       border-radius: 6px;
       transition: all 0.3s;
+      position: relative;
     }
     
-    /* 有推文的月份（右侧） */
+    /* 有推文的月份（右侧，靠近中线） */
     .month-item.has-tweets {
-      justify-content: flex-end;
-      padding-right: 10px;
+      justify-content: flex-start;
+      padding-left: 55%;
       color: #667eea;
       font-weight: 500;
       background: rgba(102, 126, 234, 0.08);
     }
     
+    /* 有推文月份的短线标记 */
+    .month-item.has-tweets::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 15px;
+      height: 2px;
+      background: #667eea;
+    }
+    
     .month-item.has-tweets.active {
       background: rgba(102, 126, 234, 0.25);
       font-weight: bold;
-      transform: translateX(5px);
     }
     
-    /* 无推文的月份（左侧） */
+    .month-item.has-tweets.active::before {
+      width: 20px;
+      height: 3px;
+    }
+    
+    /* 无推文的月份（左侧，靠近中线） */
     .month-item.no-tweets {
-      justify-content: flex-start;
-      padding-left: 10px;
+      justify-content: flex-end;
+      padding-right: 52%;
       color: #ccc;
       font-size: 0.7rem;
       opacity: 0.4;
