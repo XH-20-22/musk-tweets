@@ -294,6 +294,19 @@
       gap: 8px;
     }
     
+    /* Musk 头像 */
+    .tweet-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    
     .tweet-author {
       font-weight: bold;
       color: #1da1f2;
@@ -327,20 +340,6 @@
     /* 平台图标 */
     .platform-badge {
       font-size: 16px;
-    }
-    
-    .tweet-time {
-      color: #999;
-      font-size: 0.85rem;
-      margin-left: auto;
-    }
-    
-    body.night-mode .tweet-time {
-      color: #999;
-    }
-    
-    .media-icon {
-      font-size: 1.2rem;
     }
     
     .tweet-content {
@@ -380,35 +379,35 @@
       color: #777;
     }
     
-    /* 统计数据栏 */
-    .tweet-stats {
+    /* 统计+操作栏（合并） */
+    .tweet-footer {
       display: flex;
-      gap: 20px;
+      gap: 15px;
       padding: 12px 0;
       border-top: 1px solid #e0e0e0;
-      border-bottom: 1px solid #e0e0e0;
-      margin-bottom: 12px;
+      align-items: center;
+      flex-wrap: wrap;
     }
     
-    body.night-mode .tweet-stats {
+    body.night-mode .tweet-footer {
       border-color: #333;
     }
     
     .stat-item {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
       color: #666;
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
     
     body.night-mode .stat-item {
       color: #888;
     }
     
-    .stat-icon {
-      font-size: 1rem;
+    .stat-label {
       color: #999;
+      font-size: 0.8rem;
     }
     
     .stat-count {
@@ -420,42 +419,39 @@
       color: #ccc;
     }
     
-    /* 操作按钮 */
-    .tweet-actions {
-      display: flex;
-      gap: 12px;
-    }
-    
-    .tweet-link {
-      color: #1da1f2;
-      text-decoration: none;
-      padding: 6px 18px;
-      border: 1px solid rgba(29, 161, 242, 0.3);
-      border-radius: 20px;
-      display: inline-block;
-      transition: all 0.2s;
-      font-size: 0.9rem;
-    }
-    
-    .tweet-link:hover {
-      background: rgba(29, 161, 242, 0.1);
-      border-color: #1da1f2;
-    }
-    
+    /* 操作按钮 - 月份样式 */
+    .tweet-link,
     .tweet-share {
-      color: #657786;
+      color: #667eea;
       text-decoration: none;
-      padding: 6px 18px;
-      border: 1px solid rgba(101, 119, 134, 0.3);
-      border-radius: 20px;
-      display: inline-block;
-      transition: all 0.2s;
+      padding: 6px 12px;
+      border-radius: 4px;
+      background: rgba(102, 126, 234, 0.05);
       font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      transform: scale(1.5);
+      transform-origin: left center;
     }
     
+    .tweet-link:hover,
     .tweet-share:hover {
-      background: rgba(101, 119, 134, 0.1);
-      border-color: #657786;
+      background: rgba(102, 126, 234, 0.15);
+    }
+    
+    /* 已浏览状态 */
+    .tweet-card.viewed {
+      opacity: 0.5;
+    }
+    
+    .tweet-card.viewed .tweet-content,
+    .tweet-card.viewed .tweet-translation {
+      color: #999;
+    }
+    
+    body.night-mode .tweet-card.viewed .tweet-content,
+    body.night-mode .tweet-card.viewed .tweet-translation {
+      color: #666;
     }
     
     .loading {
@@ -546,6 +542,39 @@
     let allTweets = [];
     let yearMonthData = {};
     let timelineVisible = true;
+    
+    // 浏览记录管理
+    const VIEWED_TWEETS_KEY = 'musk_tweets_viewed';
+    const IS_DEV_MODE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
+    
+    // 开发模式：每次刷新清空浏览记录
+    if (IS_DEV_MODE) {
+      localStorage.removeItem(VIEWED_TWEETS_KEY);
+      console.log('🔧 开发模式：浏览记录已清空');
+    }
+    
+    // 获取浏览记录
+    function getViewedTweets() {
+      if (IS_DEV_MODE) return new Set();
+      const viewed = localStorage.getItem(VIEWED_TWEETS_KEY);
+      return viewed ? new Set(JSON.parse(viewed)) : new Set();
+    }
+    
+    // 保存浏览记录
+    function saveViewedTweet(tweetId) {
+      if (IS_DEV_MODE) return;
+      const viewed = getViewedTweets();
+      viewed.add(tweetId);
+      localStorage.setItem(VIEWED_TWEETS_KEY, JSON.stringify([...viewed]));
+    }
+    
+    // 标记推文为已浏览
+    function markTweetAsViewed(tweetCard, tweetId) {
+      if (!tweetCard.classList.contains('viewed')) {
+        tweetCard.classList.add('viewed');
+        saveViewedTweet(tweetId);
+      }
+    }
     
     // 中文翻译数据
     const translations = {
@@ -709,52 +738,48 @@
     // 显示所有推文
     function displayAllTweets() {
       const tweetsArea = document.getElementById('tweetsArea');
+      const viewedTweets = getViewedTweets();
       
       tweetsArea.innerHTML = allTweets.map((tweet, index) => {
         const date = new Date(tweet.time);
         const tweetId = tweet.link.split('/').pop();
         const stats = tweetStats[tweetId] || { views: '-', retweets: '-', likes: '-', bookmarks: '-' };
+        const isViewed = viewedTweets.has(tweetId);
         
-        // 简短时间（顶部）
-        const shortTime = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
-        
-        // 详细时间戳（翻译下方）
+        // 详细时间戳
         const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
         const detailedTime = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${weekdays[date.getDay()]} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
         
         return `
-          <div class="tweet-card" id="tweet-${index}" data-time="${tweet.time}">
+          <div class="tweet-card ${isViewed ? 'viewed' : ''}" id="tweet-${index}" data-time="${tweet.time}" data-tweet-id="${tweetId}">
             <div class="tweet-header">
+              <div class="tweet-avatar">🚀</div>
               <span class="tweet-author">
                 Elon Musk
                 <span class="verified-badge"></span>
                 <span class="platform-badge">𝕏</span>
               </span>
-              <span class="tweet-time">${shortTime}</span>
-              <span class="media-icon">${tweet.mediaType || ''}</span>
             </div>
             <div class="tweet-content">${tweet.text || '(纯图片/视频推文)'}</div>
             ${tweet.translation ? `<div class="tweet-translation">译：${tweet.translation}</div>` : ''}
             <div class="tweet-timestamp">${detailedTime}</div>
-            <div class="tweet-stats">
+            <div class="tweet-footer">
               <div class="stat-item">
-                <span class="stat-icon">👁</span>
+                <span class="stat-label">阅读</span>
                 <span class="stat-count">${stats.views}</span>
               </div>
               <div class="stat-item">
-                <span class="stat-icon">🔁</span>
+                <span class="stat-label">转发</span>
                 <span class="stat-count">${stats.retweets}</span>
               </div>
               <div class="stat-item">
-                <span class="stat-icon">❤️</span>
+                <span class="stat-label">点赞</span>
                 <span class="stat-count">${stats.likes}</span>
               </div>
               <div class="stat-item">
-                <span class="stat-icon">🔖</span>
+                <span class="stat-label">收藏</span>
                 <span class="stat-count">${stats.bookmarks}</span>
               </div>
-            </div>
-            <div class="tweet-actions">
               <a href="${tweet.link}" target="_blank" class="tweet-link">查看原推</a>
               <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(tweet.link)}" target="_blank" class="tweet-share">分享推文</a>
             </div>
@@ -764,6 +789,7 @@
       
       updateStats();
       setupScrollSync();
+      setupViewTracking();
     }
     
     // 设置滚动同步
@@ -859,6 +885,32 @@
       statsText += ` | 最后更新: ${new Date().toLocaleDateString('zh-CN')}`;
       
       document.getElementById('stats').innerHTML = statsText;
+    }
+    
+    // 设置浏览追踪
+    function setupViewTracking() {
+      const tweetsArea = document.getElementById('tweetsArea');
+      
+      // 使用 IntersectionObserver 追踪推文可见性
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+            const tweetCard = entry.target;
+            const tweetId = tweetCard.dataset.tweetId;
+            if (tweetId) {
+              markTweetAsViewed(tweetCard, tweetId);
+            }
+          }
+        });
+      }, {
+        root: tweetsArea,
+        threshold: 0.5
+      });
+      
+      // 观察所有推文卡片
+      document.querySelectorAll('.tweet-card').forEach(card => {
+        observer.observe(card);
+      });
     }
     
     // 页面加载时初始化
