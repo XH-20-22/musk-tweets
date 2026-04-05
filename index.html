@@ -18,69 +18,39 @@
       background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
     }
     
-    /* 顶部导航栏 */
-    .top-nav {
+    /* 顶部标题 */
+    .top-header {
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
-      padding: 15px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      padding: 20px;
+      text-align: center;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       position: sticky;
       top: 0;
       z-index: 1000;
     }
     
-    body.night-mode .top-nav {
+    body.night-mode .top-header {
       background: rgba(26, 26, 46, 0.95);
     }
     
-    .nav-title {
-      font-size: 1.5rem;
+    .main-title {
+      font-size: 2rem;
       font-weight: bold;
-      color: #667eea;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
     
-    .nav-menu {
-      display: flex;
-      gap: 10px;
-    }
-    
-    .nav-btn {
-      padding: 8px 20px;
-      border: 2px solid #667eea;
-      background: transparent;
-      color: #667eea;
-      border-radius: 20px;
-      cursor: pointer;
+    .subtitle {
       font-size: 0.9rem;
-      transition: all 0.3s;
-      font-weight: 500;
+      color: #666;
+      margin-top: 5px;
     }
     
-    .nav-btn:hover {
-      background: #667eea;
-      color: white;
-    }
-    
-    .nav-btn.active {
-      background: #667eea;
-      color: white;
-    }
-    
-    body.night-mode .nav-btn {
-      color: #eee;
-      border-color: #667eea;
-    }
-    
-    body.night-mode .nav-btn:hover,
-    body.night-mode .nav-btn.active {
-      background: #667eea;
-      color: white;
+    body.night-mode .subtitle {
+      color: #aaa;
     }
     
     /* 主内容区 */
@@ -92,16 +62,16 @@
       margin: 0 auto;
     }
     
-    /* 左侧时间线 */
+    /* 左侧时间线（简化版：只显示年月） */
     .timeline {
-      width: 280px;
+      width: 200px;
       background: rgba(255, 255, 255, 0.95);
       border-radius: 12px;
       padding: 20px;
-      height: calc(100vh - 100px);
+      height: calc(100vh - 140px);
       overflow-y: auto;
       position: sticky;
-      top: 80px;
+      top: 120px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     
@@ -110,7 +80,7 @@
     }
     
     .timeline-title {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       font-weight: bold;
       color: #667eea;
       margin-bottom: 15px;
@@ -119,50 +89,48 @@
       border-bottom: 2px solid #667eea;
     }
     
-    .timeline-item {
-      padding: 12px;
-      margin-bottom: 10px;
+    .timeline-month {
+      padding: 12px 15px;
+      margin-bottom: 8px;
       border-left: 3px solid #ddd;
-      padding-left: 15px;
       cursor: pointer;
       transition: all 0.3s;
       border-radius: 4px;
+      font-size: 0.95rem;
     }
     
-    .timeline-item:hover {
+    .timeline-month:hover {
       background: rgba(102, 126, 234, 0.1);
       border-left-color: #667eea;
     }
     
-    .timeline-item.active {
-      background: rgba(102, 126, 234, 0.15);
+    .timeline-month.active {
+      background: rgba(102, 126, 234, 0.2);
       border-left-color: #667eea;
       font-weight: bold;
+      color: #667eea;
     }
     
-    .timeline-date {
-      font-size: 0.85rem;
-      color: #666;
-      margin-bottom: 5px;
+    .month-label {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 3px;
     }
     
-    body.night-mode .timeline-date {
-      color: #aaa;
-    }
-    
-    .timeline-preview {
-      font-size: 0.85rem;
+    .month-count {
+      font-size: 0.8rem;
       color: #999;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+    }
+    
+    body.night-mode .month-count {
+      color: #666;
     }
     
     /* 右侧推文区 */
     .tweets-area {
       flex: 1;
       overflow-y: auto;
-      height: calc(100vh - 100px);
+      height: calc(100vh - 140px);
     }
     
     .tweet-card {
@@ -217,6 +185,7 @@
       line-height: 1.6;
       margin-bottom: 15px;
       white-space: pre-wrap;
+      font-size: 1.05rem;
     }
     
     body.night-mode .tweet-content {
@@ -226,7 +195,7 @@
     .tweet-link {
       color: #1da1f2;
       text-decoration: none;
-      padding: 5px 15px;
+      padding: 6px 18px;
       border: 1px solid #1da1f2;
       border-radius: 20px;
       display: inline-block;
@@ -237,15 +206,6 @@
     .tweet-link:hover {
       background: #1da1f2;
       color: white;
-    }
-    
-    .featured-badge {
-      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      color: white;
-      padding: 3px 10px;
-      border-radius: 12px;
-      font-size: 0.8rem;
-      margin-left: 10px;
     }
     
     .loading {
@@ -259,57 +219,7 @@
       text-align: center;
       color: rgba(255,255,255,0.9);
       padding: 20px;
-      font-size: 0.9rem;
-    }
-    
-    /* 月份筛选下拉菜单 */
-    .month-selector {
-      position: relative;
-      display: inline-block;
-    }
-    
-    .month-dropdown {
-      display: none;
-      position: absolute;
-      top: 100%;
-      right: 0;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      margin-top: 5px;
-      min-width: 150px;
-      z-index: 1001;
-    }
-    
-    body.night-mode .month-dropdown {
-      background: #1a1a2e;
-    }
-    
-    .month-selector:hover .month-dropdown {
-      display: block;
-    }
-    
-    .month-option {
-      padding: 10px 20px;
-      cursor: pointer;
-      transition: background 0.2s;
-      color: #333;
-    }
-    
-    body.night-mode .month-option {
-      color: #eee;
-    }
-    
-    .month-option:hover {
-      background: rgba(102, 126, 234, 0.1);
-    }
-    
-    .month-option:first-child {
-      border-radius: 8px 8px 0 0;
-    }
-    
-    .month-option:last-child {
-      border-radius: 0 0 8px 8px;
+      font-size: 0.95rem;
     }
     
     /* 滚动条 */
@@ -338,38 +248,26 @@
       .timeline {
         width: 100%;
         height: auto;
-        max-height: 200px;
+        max-height: 250px;
         position: relative;
         top: 0;
       }
       .tweets-area {
         height: auto;
       }
-      .nav-menu {
-        flex-wrap: wrap;
-      }
     }
   </style>
 </head>
 <body>
-  <!-- 顶部导航栏 -->
-  <div class="top-nav">
-    <div class="nav-title">
-      🚀 Elon Musk 推文合集
-    </div>
-    <div class="nav-menu">
-      <button class="nav-btn active" onclick="filterTweets('all')">所有推文</button>
-      <button class="nav-btn" onclick="filterTweets('featured')">精选推文</button>
-      <div class="month-selector">
-        <button class="nav-btn">按月份 ▾</button>
-        <div class="month-dropdown" id="monthDropdown"></div>
-      </div>
-    </div>
+  <!-- 顶部标题 -->
+  <div class="top-header">
+    <div class="main-title">🚀 Elon Musk 推文合集</div>
+    <div class="subtitle">2024年1月至今</div>
   </div>
 
   <!-- 主内容区 -->
   <div class="main-content">
-    <!-- 左侧时间线 -->
+    <!-- 左侧时间线（按年月） -->
     <div class="timeline">
       <div class="timeline-title">📅 时间线</div>
       <div id="timelineContainer"></div>
@@ -385,17 +283,8 @@
 
   <script>
     let allTweets = [];
-    let currentFilter = 'all';
     let currentMonth = null;
-    
-    // 精选推文ID列表（手动标记）
-    const featuredIds = [
-      '1519480761749016577',  // Coca-Cola cocaine
-      '1585841080431321088',  // the bird is freed
-      '1812256998588662068',  // Trump endorsement
-      '1518623997054918657',  // free speech
-      '1519495072802390016'   // maximum fun
-    ];
+    let monthGroups = {};
     
     // 夜间模式
     function updateTheme() {
@@ -419,90 +308,98 @@
         const response = await fetch('data/tweets-raw.json');
         allTweets = await response.json();
         
-        // 标记精选推文
-        allTweets.forEach(tweet => {
-          const tweetId = tweet.link.split('/').pop();
-          tweet.featured = featuredIds.includes(tweetId);
-        });
+        if (!Array.isArray(allTweets) || allTweets.length === 0) {
+          throw new Error('推文数据为空或格式错误');
+        }
         
         // 按时间排序（最新在前）
         allTweets.sort((a, b) => new Date(b.time) - new Date(a.time));
         
-        // 生成月份列表
-        generateMonthList();
+        // 按年月分组
+        groupByMonth();
         
-        // 显示推文
-        filterTweets('all');
+        // 生成时间线
+        generateTimeline();
+        
+        // 默认显示所有推文
+        displayAllTweets();
+        
       } catch (e) {
         document.getElementById('tweetsArea').innerHTML = 
-          '<div class="loading">❌ 加载失败: ' + e.message + '</div>';
+          '<div class="loading">❌ 加载失败: ' + e.message + '<br><br>请确保 data/tweets-raw.json 文件存在且格式正确</div>';
       }
     }
     
-    // 生成月份下拉菜单
-    function generateMonthList() {
-      const months = new Set();
+    // 按年月分组
+    function groupByMonth() {
+      monthGroups = {};
+      
       allTweets.forEach(tweet => {
         const date = new Date(tweet.time);
         const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-        months.add(monthKey);
+        
+        if (!monthGroups[monthKey]) {
+          monthGroups[monthKey] = [];
+        }
+        monthGroups[monthKey].push(tweet);
       });
-      
-      const monthArray = Array.from(months).sort().reverse();
-      const dropdown = document.getElementById('monthDropdown');
-      
-      dropdown.innerHTML = monthArray.map(month => 
-        `<div class="month-option" onclick="filterByMonth('${month}')">${month}</div>`
-      ).join('');
     }
     
-    // 筛选推文
-    function filterTweets(type) {
-      currentFilter = type;
-      currentMonth = null;
+    // 生成时间线
+    function generateTimeline() {
+      const timelineContainer = document.getElementById('timelineContainer');
+      const months = Object.keys(monthGroups).sort().reverse();
       
-      // 更新按钮状态
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('active');
-      });
-      event.target.classList.add('active');
-      
-      let filtered = allTweets;
-      
-      if (type === 'featured') {
-        filtered = allTweets.filter(t => t.featured);
-      }
-      
-      displayTweets(filtered);
+      timelineContainer.innerHTML = months.map(month => {
+        const count = monthGroups[month].length;
+        const [year, mon] = month.split('-');
+        const label = `${year}年${parseInt(mon)}月`;
+        
+        return `
+          <div class="timeline-month" data-month="${month}" onclick="filterByMonth('${month}')">
+            <span class="month-label">${label}</span>
+            <span class="month-count">${count} 条推文</span>
+          </div>
+        `;
+      }).join('');
     }
     
     // 按月份筛选
     function filterByMonth(month) {
-      currentFilter = 'month';
       currentMonth = month;
       
-      // 更新按钮状态
-      document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.classList.remove('active');
+      // 更新时间线高亮
+      document.querySelectorAll('.timeline-month').forEach(item => {
+        if (item.dataset.month === month) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
       });
       
-      const filtered = allTweets.filter(tweet => {
-        const date = new Date(tweet.time);
-        const tweetMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-        return tweetMonth === month;
+      // 显示该月的推文
+      const tweets = monthGroups[month] || [];
+      displayTweets(tweets, month);
+    }
+    
+    // 显示所有推文
+    function displayAllTweets() {
+      currentMonth = null;
+      
+      // 清除时间线高亮
+      document.querySelectorAll('.timeline-month').forEach(item => {
+        item.classList.remove('active');
       });
       
-      displayTweets(filtered);
+      displayTweets(allTweets, '所有推文');
     }
     
     // 显示推文
-    function displayTweets(tweets) {
+    function displayTweets(tweets, title) {
       const tweetsArea = document.getElementById('tweetsArea');
-      const timelineContainer = document.getElementById('timelineContainer');
       
       if (tweets.length === 0) {
-        tweetsArea.innerHTML = '<div class="loading">😕 没有找到推文</div>';
-        timelineContainer.innerHTML = '';
+        tweetsArea.innerHTML = '<div class="loading">😕 该月份没有推文</div>';
         document.getElementById('stats').innerHTML = '暂无数据';
         return;
       }
@@ -510,89 +407,37 @@
       // 生成推文卡片
       tweetsArea.innerHTML = tweets.map((tweet, index) => {
         const date = new Date(tweet.time);
-        const formattedDate = `${date.getMonth() + 1}月${date.getDate()}日 ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        const formattedDate = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
         
         return `
           <div class="tweet-card" id="tweet-${index}">
             <div class="tweet-header">
               <span class="tweet-author">Elon Musk</span>
               <span class="tweet-time">${formattedDate}</span>
-              ${tweet.featured ? '<span class="featured-badge">⭐ 精选</span>' : ''}
               <span class="media-icon">${tweet.mediaType || ''}</span>
             </div>
             <div class="tweet-content">${tweet.text || '(纯图片/视频推文)'}</div>
-            <a href="${tweet.link}" target="_blank" class="tweet-link">查看原推</a>
+            <a href="${tweet.link}" target="_blank" class="tweet-link">查看原推 →</a>
           </div>
         `;
       }).join('');
       
-      // 生成时间线
-      timelineContainer.innerHTML = tweets.map((tweet, index) => {
-        const date = new Date(tweet.time);
-        const shortDate = `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-        const preview = tweet.text.substring(0, 30) || '(图片/视频)';
-        
-        return `
-          <div class="timeline-item ${index === 0 ? 'active' : ''}" onclick="scrollToTweet(${index})">
-            <div class="timeline-date">${shortDate}</div>
-            <div class="timeline-preview">${preview}...</div>
-          </div>
-        `;
-      }).join('');
+      // 滚动到顶部
+      tweetsArea.scrollTop = 0;
       
       // 更新统计
-      const featuredCount = tweets.filter(t => t.featured).length;
-      document.getElementById('stats').innerHTML = 
-        `共 ${tweets.length} 条推文 | ${featuredCount} 条精选 | 最后更新: ${new Date().toLocaleDateString('zh-CN')}`;
-    }
-    
-    // 滚动到指定推文
-    function scrollToTweet(index) {
-      const tweet = document.getElementById('tweet-' + index);
-      if (tweet) {
-        tweet.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // 更新时间线高亮
-        document.querySelectorAll('.timeline-item').forEach((item, i) => {
-          if (i === index) {
-            item.classList.add('active');
-          } else {
-            item.classList.remove('active');
-          }
-        });
-        
-        // 临时高亮推文
-        tweet.style.boxShadow = '0 0 20px rgba(102, 126, 234, 0.5)';
-        setTimeout(() => {
-          tweet.style.boxShadow = '';
-        }, 1000);
+      const totalCount = allTweets.length;
+      const currentCount = tweets.length;
+      const monthCount = Object.keys(monthGroups).length;
+      
+      let statsText = `共 ${totalCount} 条推文 | 跨越 ${monthCount} 个月`;
+      if (title !== '所有推文') {
+        statsText += ` | 当前显示: ${title} (${currentCount} 条)`;
       }
+      statsText += ` | 最后更新: ${new Date().toLocaleDateString('zh-CN')}`;
+      
+      document.getElementById('stats').innerHTML = statsText;
     }
-    
-    // 监听滚动，自动更新时间线
-    let scrollTimeout;
-    document.getElementById('tweetsArea').addEventListener('scroll', function() {
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        const cards = document.querySelectorAll('.tweet-card');
-        const scrollPosition = this.scrollTop + this.clientHeight / 2;
-        
-        cards.forEach((card, index) => {
-          const cardTop = card.offsetTop;
-          const cardBottom = cardTop + card.clientHeight;
-          
-          if (scrollPosition >= cardTop && scrollPosition <= cardBottom) {
-            document.querySelectorAll('.timeline-item').forEach((item, i) => {
-              if (i === index) {
-                item.classList.add('active');
-              } else {
-                item.classList.remove('active');
-              }
-            });
-          }
-        });
-      }, 100);
-    });
     
     // 页面加载时初始化
     loadTweets();
