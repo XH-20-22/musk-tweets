@@ -85,15 +85,14 @@
       padding: 20px;
       max-width: 1400px;
       margin: 0 auto;
-      transition: gap 0.3s;
     }
     
     /* 左侧时间线 */
     .timeline {
-      width: 280px;
+      width: 220px;
       background: rgba(255, 255, 255, 0.95);
       border-radius: 12px;
-      padding: 20px;
+      padding: 20px 10px;
       height: calc(100vh - 140px);
       overflow-y: auto;
       position: sticky;
@@ -102,10 +101,23 @@
       transition: all 0.3s;
     }
     
-    /* 隐藏状态 */
     .timeline.hidden {
       width: 80px;
-      padding: 15px 10px;
+      padding: 15px 5px;
+    }
+    
+    body.night-mode .timeline {
+      background: rgba(26, 26, 46, 0.95);
+    }
+    
+    .timeline-title {
+      font-size: 1rem;
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 20px;
+      text-align: center;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #667eea;
     }
     
     .timeline.hidden .timeline-title {
@@ -114,47 +126,9 @@
       margin: 0 auto 15px auto;
     }
     
-    .timeline.hidden .year-group::before {
-      left: 50%;
-    }
-    
-    .timeline.hidden .year-label {
-      font-size: 0.9rem;
-      text-align: center;
-      padding: 0;
-    }
-    
-    .timeline.hidden .year-count {
-      display: none;
-    }
-    
-    .timeline.hidden .months-list {
-      display: none;
-    }
-    
-    .timeline.hidden .year-header {
-      flex-direction: column;
-      padding: 5px;
-    }
-    
-    body.night-mode .timeline {
-      background: rgba(26, 26, 46, 0.95);
-    }
-    
-    .timeline-title {
-      font-size: 1.1rem;
-      font-weight: bold;
-      color: #667eea;
-      margin-bottom: 20px;
-      text-align: center;
-      padding-bottom: 10px;
-      border-bottom: 2px solid #667eea;
-      transition: all 0.3s;
-    }
-    
     /* 年份组 */
     .year-group {
-      margin-bottom: 25px;
+      margin-bottom: 30px;
       position: relative;
     }
     
@@ -163,163 +137,84 @@
       content: '';
       position: absolute;
       left: 50%;
-      top: 35px;
+      top: 40px;
       bottom: 0;
       width: 2px;
       background: linear-gradient(to bottom, #667eea, transparent);
       transform: translateX(-50%);
-      transition: left 0.3s;
     }
     
     .year-group:last-child::before {
       background: linear-gradient(to bottom, #667eea, #ddd);
     }
     
-    /* 年份标题 */
-    .year-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 15px;
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 8px;
-      transition: all 0.3s;
-      position: relative;
-    }
-    
-    .year-header:hover {
-      background: rgba(102, 126, 234, 0.1);
-    }
-    
-    .year-header.active {
-      background: rgba(102, 126, 234, 0.2);
-    }
-    
+    /* 年份标题（居中） */
     .year-label {
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       font-weight: bold;
       color: #667eea;
-      flex: 1;
-      text-align: left;
+      text-align: center;
+      margin-bottom: 15px;
+      padding: 8px;
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 8px;
+    }
+    
+    body.night-mode .year-label {
+      background: rgba(102, 126, 234, 0.15);
+    }
+    
+    .timeline.hidden .year-label {
+      font-size: 1rem;
+    }
+    
+    /* 月份容器 */
+    .months-container {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    /* 月份项 */
+    .month-item {
+      display: flex;
+      align-items: center;
+      font-size: 0.85rem;
+      padding: 6px 8px;
+      border-radius: 6px;
+      transition: all 0.3s;
+    }
+    
+    /* 有推文的月份（右侧） */
+    .month-item.has-tweets {
+      justify-content: flex-end;
+      padding-right: 10px;
+      color: #667eea;
+      font-weight: 500;
+      background: rgba(102, 126, 234, 0.08);
+    }
+    
+    .month-item.has-tweets.active {
+      background: rgba(102, 126, 234, 0.25);
+      font-weight: bold;
+      transform: translateX(5px);
+    }
+    
+    /* 无推文的月份（左侧） */
+    .month-item.no-tweets {
+      justify-content: flex-start;
       padding-left: 10px;
-      transition: font-size 0.3s;
+      color: #ccc;
+      font-size: 0.7rem;
+      opacity: 0.4;
     }
     
-    .year-label.disabled {
-      color: #999;
-      opacity: 0.5;
-    }
-    
-    body.night-mode .year-label.disabled {
+    body.night-mode .month-item.no-tweets {
       color: #555;
     }
     
-    .year-count {
-      font-size: 0.85rem;
-      color: #999;
-      padding-right: 10px;
-      transition: opacity 0.3s;
-    }
-    
-    /* 月份列表 */
-    .months-list {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 8px;
-      padding-left: 50%;
-      padding-right: 10px;
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.5s ease-in-out;
-    }
-    
-    .months-list.expanded {
-      max-height: 1000px;
-    }
-    
-    .month-item {
-      padding: 10px 15px;
-      border-left: 3px solid #ddd;
-      cursor: pointer;
-      transition: all 0.3s;
-      border-radius: 4px;
-      background: rgba(255, 255, 255, 0.5);
-      position: relative;
-    }
-    
-    body.night-mode .month-item {
-      background: rgba(0, 0, 0, 0.2);
-    }
-    
-    .month-item::before {
-      content: '';
-      position: absolute;
-      left: -8px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #667eea;
-      border: 2px solid rgba(255, 255, 255, 0.95);
-    }
-    
-    .month-item:hover {
-      background: rgba(102, 126, 234, 0.15);
-      border-left-color: #667eea;
-      transform: translateX(3px);
-    }
-    
-    .month-item.active {
-      background: rgba(102, 126, 234, 0.25);
-      border-left-color: #667eea;
-      font-weight: bold;
-    }
-    
-    .month-item.disabled {
-      color: #ccc;
-      opacity: 0.3;
-      cursor: default;
-      background: transparent;
-    }
-    
-    .month-item.disabled::before {
-      background: #ddd;
-    }
-    
-    body.night-mode .month-item.disabled {
-      color: #444;
-    }
-    
-    .month-item:hover.disabled {
-      transform: none;
-      border-left-color: #ddd;
-      background: transparent;
-    }
-    
-    .month-label {
-      font-size: 0.9rem;
-      display: block;
-      margin-bottom: 3px;
-      transition: font-size 0.3s;
-    }
-    
-    .month-count {
-      font-size: 0.75rem;
-      color: #999;
-    }
-    
-    .month-item.disabled .month-count {
+    .timeline.hidden .months-container {
       display: none;
-    }
-    
-    /* 字体放大效果 */
-    .year-label.zoom {
-      font-size: 2.2rem;
-    }
-    
-    .month-label.zoom {
-      font-size: 1.1rem;
     }
     
     /* 右侧推文区 */
@@ -379,13 +274,27 @@
     .tweet-content {
       color: #333;
       line-height: 1.6;
-      margin-bottom: 15px;
+      margin-bottom: 8px;
       white-space: pre-wrap;
       font-size: 1.05rem;
     }
     
     body.night-mode .tweet-content {
       color: #eee;
+    }
+    
+    .tweet-translation {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 15px;
+      font-size: 0.95rem;
+      padding-top: 8px;
+      border-top: 1px dashed #e0e0e0;
+    }
+    
+    body.night-mode .tweet-translation {
+      color: #aaa;
+      border-top-color: #333;
     }
     
     .tweet-link {
@@ -421,7 +330,7 @@
     /* 滚动条 */
     .timeline::-webkit-scrollbar,
     .tweets-area::-webkit-scrollbar {
-      width: 8px;
+      width: 6px;
     }
     
     .timeline::-webkit-scrollbar-track,
@@ -436,7 +345,7 @@
       border-radius: 10px;
     }
     
-    /* 响应式 - 保持左右布局 */
+    /* 响应式 */
     @media (max-width: 768px) {
       .main-content {
         gap: 10px;
@@ -444,9 +353,8 @@
       }
       
       .timeline {
-        width: 100px;
+        width: 90px;
         padding: 10px 5px;
-        font-size: 0.8rem;
       }
       
       .timeline .timeline-title {
@@ -456,38 +364,21 @@
       }
       
       .timeline .year-label {
-        font-size: 1.2rem;
-        text-align: center;
-        padding: 0;
+        font-size: 1.1rem;
       }
       
-      .timeline .year-count {
-        display: none;
-      }
-      
-      .timeline .months-list {
-        padding-left: 0;
-        padding-right: 0;
-      }
-      
-      .timeline .month-label {
-        font-size: 0.75rem;
-      }
-      
-      .timeline .month-count {
-        font-size: 0.65rem;
+      .timeline .month-item {
+        font-size: 0.7rem;
       }
       
       .timeline.hidden {
-        width: 60px;
+        width: 50px;
       }
       
       .timeline-toggle {
         width: 40px;
         height: 40px;
         font-size: 1.2rem;
-        left: 10px;
-        bottom: 20px;
       }
     }
   </style>
@@ -523,8 +414,27 @@
   <script>
     let allTweets = [];
     let yearMonthData = {};
-    let expandedYear = null;
     let timelineVisible = true;
+    
+    // 中文翻译数据
+    const translations = {
+      '1519480761749016577': '下一步我要买下可口可乐，把可卡因加回去',
+      '1812258574049157405': '（图片）',
+      '1518623997054918657': '我希望即使是我最严厉的批评者也能留在推特上，因为这就是言论自由的意义',
+      '1854026234339938528': '未来将会如此火爆 🔥',
+      '1519495072802390016': '让我们让推特变得超级有趣！',
+      '1518677066325053441': '耶！！！成了！🚀',
+      '1519495982723084290': '听着，我又不能创造奇迹',
+      '1854201929519247803': '美国的清晨再次来临',
+      '1585841080431321088': '小鸟自由了（指推特收购完成）',
+      '1812256998588662068': '我完全支持特朗普总统，并希望他早日康复',
+      '1854034776815972649': '好好想想这个（双关：sink=水槽，也指"理解、领悟"）',
+      '1586104694421659648': '喜剧现在在推特上合法了',
+      '1820685675899072930': '（视频）',
+      '1593459801966538755': '（图片）',
+      '1823742501884453312': '黑子们会说这是AI生成的 🤖',
+      '1932695486684950962': '我对上周关于特朗普总统的一些推文感到后悔。它们太过分了。'
+    };
     
     // 夜间模式
     function updateTheme() {
@@ -571,16 +481,20 @@
         // 按时间排序（最新在前）
         allTweets.sort((a, b) => new Date(b.time) - new Date(a.time));
         
+        // 添加翻译
+        allTweets.forEach(tweet => {
+          const tweetId = tweet.link.split('/').pop();
+          tweet.translation = translations[tweetId] || '';
+        });
+        
         // 构建年月数据结构
         buildYearMonthData();
         
         // 生成时间线
         generateTimeline();
         
-        // 默认展开并显示最新年份
-        const latestYear = Object.keys(yearMonthData).sort().reverse()[0];
-        expandYear(latestYear);
-        filterByYear(latestYear);
+        // 显示所有推文
+        displayAllTweets();
         
       } catch (e) {
         document.getElementById('tweetsArea').innerHTML = 
@@ -620,32 +534,23 @@
       const years = Object.keys(yearMonthData).sort().reverse();
       
       container.innerHTML = years.map(year => {
-        const yearTweets = Object.values(yearMonthData[year]).flat();
-        const hasYearTweets = yearTweets.length > 0;
-        
         const monthsHtml = [1,2,3,4,5,6,7,8,9,10,11,12].map(month => {
           const tweets = yearMonthData[year][month];
           const hasMonthTweets = tweets.length > 0;
           const monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
           
           return `
-            <div class="month-item ${hasMonthTweets ? '' : 'disabled'}" 
-                 data-year="${year}" data-month="${month}"
-                 onclick="${hasMonthTweets ? `filterByMonth(${year}, ${month})` : 'return false;'}">
-              <span class="month-label">${monthNames[month-1]}</span>
-              ${hasMonthTweets ? `<span class="month-count">${tweets.length} 条</span>` : ''}
+            <div class="month-item ${hasMonthTweets ? 'has-tweets' : 'no-tweets'}" 
+                 data-year="${year}" data-month="${month}">
+              ${monthNames[month-1]}
             </div>
           `;
         }).join('');
         
         return `
           <div class="year-group" data-year="${year}">
-            <div class="year-header ${hasYearTweets ? '' : ''}" 
-                 onclick="toggleYearExpand(${year})">
-              <span class="year-label ${hasYearTweets ? '' : 'disabled'}">${year}</span>
-              <span class="year-count">${hasYearTweets ? yearTweets.length + ' 条' : ''}</span>
-            </div>
-            <div class="months-list" id="months-${year}">
+            <div class="year-label">${year}</div>
+            <div class="months-container">
               ${monthsHtml}
             </div>
           </div>
@@ -653,95 +558,11 @@
       }).join('');
     }
     
-    // 切换年份展开/折叠
-    function toggleYearExpand(year) {
-      if (expandedYear === year) {
-        // 如果点击的是当前展开的年份，则收起
-        collapseYear(year);
-        expandedYear = null;
-      } else {
-        // 收起之前展开的年份
-        if (expandedYear) {
-          collapseYear(expandedYear);
-        }
-        // 展开新年份
-        expandYear(year);
-        expandedYear = year;
-        filterByYear(year);
-      }
-    }
-    
-    // 展开年份
-    function expandYear(year) {
-      const monthsList = document.getElementById(`months-${year}`);
-      if (monthsList) {
-        monthsList.classList.add('expanded');
-      }
-      expandedYear = year;
-    }
-    
-    // 收起年份
-    function collapseYear(year) {
-      const monthsList = document.getElementById(`months-${year}`);
-      if (monthsList) {
-        monthsList.classList.remove('expanded');
-      }
-    }
-    
-    // 按年份筛选
-    function filterByYear(year) {
-      let firstMonth = null;
-      for (let month = 1; month <= 12; month++) {
-        if (yearMonthData[year][month].length > 0) {
-          firstMonth = month;
-          break;
-        }
-      }
-      
-      if (firstMonth) {
-        filterByMonth(year, firstMonth);
-      } else {
-        displayTweets([], `${year}年（暂无推文）`);
-      }
-      
-      document.querySelectorAll('.year-header').forEach(header => {
-        header.classList.remove('active');
-      });
-      
-      const targetGroup = document.querySelector(`.year-group[data-year="${year}"]`);
-      if (targetGroup) {
-        targetGroup.querySelector('.year-header').classList.add('active');
-      }
-    }
-    
-    // 按月份筛选
-    function filterByMonth(year, month) {
-      const tweets = yearMonthData[year][month] || [];
-      const monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
-      
-      displayTweets(tweets, `${year}年${monthNames[month-1]}`);
-      
-      document.querySelectorAll('.month-item').forEach(item => {
-        item.classList.remove('active');
-      });
-      
-      const targetMonth = document.querySelector(`.month-item[data-year="${year}"][data-month="${month}"]`);
-      if (targetMonth) {
-        targetMonth.classList.add('active');
-      }
-    }
-    
-    // 显示推文
-    function displayTweets(tweets, title) {
+    // 显示所有推文
+    function displayAllTweets() {
       const tweetsArea = document.getElementById('tweetsArea');
       
-      if (tweets.length === 0) {
-        tweetsArea.innerHTML = `<div class="loading">😕 ${title} 暂无推文</div>`;
-        updateStats(title, 0);
-        return;
-      }
-      
-      tweetsArea.innerHTML = tweets.map((tweet, index) => {
+      tweetsArea.innerHTML = allTweets.map((tweet, index) => {
         const date = new Date(tweet.time);
         const formattedDate = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
         
@@ -753,25 +574,23 @@
               <span class="media-icon">${tweet.mediaType || ''}</span>
             </div>
             <div class="tweet-content">${tweet.text || '(纯图片/视频推文)'}</div>
+            ${tweet.translation ? `<div class="tweet-translation">🇨🇳 ${tweet.translation}</div>` : ''}
             <a href="${tweet.link}" target="_blank" class="tweet-link">查看原推 →</a>
           </div>
         `;
       }).join('');
       
-      tweetsArea.scrollTop = 0;
-      updateStats(title, tweets.length);
-      
-      // 添加滚动监听，实现字体放大效果
-      setupScrollZoom();
+      updateStats();
+      setupScrollSync();
     }
     
-    // 设置滚动字体放大效果
-    function setupScrollZoom() {
-      if (!timelineVisible) return;
-      
+    // 设置滚动同步
+    function setupScrollSync() {
       const tweetsArea = document.getElementById('tweetsArea');
       
       tweetsArea.addEventListener('scroll', function() {
+        if (!timelineVisible) return;
+        
         const cards = document.querySelectorAll('.tweet-card');
         const scrollTop = this.scrollTop;
         const viewportHeight = this.clientHeight;
@@ -798,34 +617,44 @@
           const year = date.getFullYear();
           const month = date.getMonth() + 1;
           
-          // 重置所有字体
-          document.querySelectorAll('.year-label, .month-label').forEach(el => {
-            el.classList.remove('zoom');
+          // 高亮对应月份
+          document.querySelectorAll('.month-item').forEach(item => {
+            item.classList.remove('active');
           });
           
-          // 放大对应年月
           const targetMonth = document.querySelector(`.month-item[data-year="${year}"][data-month="${month}"]`);
           if (targetMonth) {
-            targetMonth.querySelector('.month-label').classList.add('zoom');
-          }
-          
-          const targetYear = document.querySelector(`.year-group[data-year="${year}"] .year-label`);
-          if (targetYear) {
-            targetYear.classList.add('zoom');
+            targetMonth.classList.add('active');
+            
+            // 滚动时间线到可见位置
+            const timeline = document.getElementById('timeline');
+            const monthTop = targetMonth.offsetTop;
+            const timelineScrollTop = timeline.scrollTop;
+            const timelineHeight = timeline.clientHeight;
+            
+            if (monthTop < timelineScrollTop || monthTop > timelineScrollTop + timelineHeight - 50) {
+              targetMonth.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
           }
         }
       });
     }
     
     // 更新统计信息
-    function updateStats(title, currentCount) {
+    function updateStats() {
       const totalCount = allTweets.length;
       const yearCount = Object.keys(yearMonthData).length;
       
-      let statsText = `共 ${totalCount} 条推文 | 跨越 ${yearCount} 年`;
-      if (currentCount > 0) {
-        statsText += ` | 当前: ${title} (${currentCount} 条)`;
-      }
+      const monthsWithTweets = [];
+      Object.keys(yearMonthData).forEach(year => {
+        Object.keys(yearMonthData[year]).forEach(month => {
+          if (yearMonthData[year][month].length > 0) {
+            monthsWithTweets.push(`${year}-${month}`);
+          }
+        });
+      });
+      
+      let statsText = `共 ${totalCount} 条推文 | 跨越 ${yearCount} 年 | 覆盖 ${monthsWithTweets.length} 个月`;
       statsText += ` | 最后更新: ${new Date().toLocaleDateString('zh-CN')}`;
       
       document.getElementById('stats').innerHTML = statsText;
