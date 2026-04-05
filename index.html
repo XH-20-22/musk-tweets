@@ -185,7 +185,7 @@
     /* 有推文的月份（右侧，靠近中线） */
     .month-item.has-tweets {
       justify-content: flex-start;
-      padding-left: 55%;
+      padding-left: calc(50% + 15px + 8px);
       color: #667eea;
       font-weight: 500;
       background: rgba(102, 126, 234, 0.08);
@@ -211,6 +211,16 @@
     .month-item.has-tweets.active::before {
       width: 20px;
       height: 3px;
+    }
+    
+    .month-count {
+      font-size: 0.75rem;
+      color: #999;
+      margin-left: 4px;
+    }
+    
+    body.night-mode .month-count {
+      color: #888;
     }
     
     /* 无推文的月份（左侧，靠近中线） */
@@ -555,7 +565,7 @@
           return `
             <div class="month-item ${hasMonthTweets ? 'has-tweets' : 'no-tweets'}" 
                  data-year="${year}" data-month="${month}">
-              ${monthNames[month-1]}
+              ${monthNames[month-1]}${hasMonthTweets ? ` <span class="month-count">(${tweets.length})</span>` : ''}
             </div>
           `;
         }).join('');
