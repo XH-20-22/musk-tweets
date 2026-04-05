@@ -35,7 +35,7 @@ echo "🕷️  Step 2: 抓取最新推文..."
 FETCH_SCRIPT=$(cat "$SCRIPT_DIR/fetch-tweets.js")
 
 # 导航到 Elon Musk 推特页面并执行脚本
-TWEETS_JSON=$(mcporter call --server http://localhost:9090 playwright_execute_script --args "{
+TWEETS_JSON=$(mcporter call --http-url http://localhost:9090 --allow-http playwright_execute_script --args "{
   \"script\": $(echo "$FETCH_SCRIPT" | jq -Rs .)
 }" 2>&1 | grep -A 9999 '^\[' || echo "[]")
 
