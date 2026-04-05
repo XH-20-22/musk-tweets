@@ -600,27 +600,33 @@
         
         const cards = document.querySelectorAll('.tweet-card');
         const scrollTop = this.scrollTop;
-        const viewportHeight = this.clientHeight;
-        const centerY = scrollTop + viewportHeight / 2;
+        const viewportTop = scrollTop;
+        const viewportBottom = scrollTop + this.clientHeight;
         
-        // 找到最接近视口中心的推文
-        let closestCard = null;
-        let minDistance = Infinity;
-        
+        // 找到视口中可见的推文
+        let visibleCards = [];
         cards.forEach(card => {
           const cardTop = card.offsetTop;
-          const cardHeight = card.clientHeight;
-          const cardCenter = cardTop + cardHeight / 2;
-          const distance = Math.abs(cardCenter - centerY);
+          const cardBottom = cardTop + card.clientHeight;
           
-          if (distance < minDistance) {
-            minDistance = distance;
-            closestCard = card;
+          // 检查卡片是否在视口内
+          if (cardBottom > viewportTop && cardTop < viewportBottom) {
+            const visibleHeight = Math.min(cardBottom, viewportBottom) - Math.max(cardTop, viewportTop);
+            const visibilityRatio = visibleHeight / card.clientHeight;
+            visibleCards.push({
+              card: card,
+              ratio: visibilityRatio,
+              top: cardTop
+            });
           }
         });
         
-        if (closestCard) {
-          const date = new Date(closestCard.dataset.time);
+        // 选择可见度最高的推文
+        if (visibleCards.length > 0) {
+          visibleCards.sort((a, b) => b.ratio - a.ratio);
+          const mostVisibleCard = visibleCards[0].card;
+          
+          const date = new Date(mostVisibleCard.dataset.time);
           const year = date.getFullYear();
           const month = date.getMonth() + 1;
           
@@ -655,6 +661,9 @@
           }
         }
       });
+      
+      // 触发初始同步
+      tweetsArea.dispatchEvent(new Event('scroll'));
     }
     
     // 更新统计信息
