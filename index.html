@@ -7,170 +7,113 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     
-    /* 白天模式（默认） */
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       transition: background 0.5s ease;
     }
     
-    /* 夜间模式 */
     body.night-mode {
       background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
     }
     
-    body.night-mode .timeline {
+    /* 顶部导航栏 */
+    .top-nav {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    
+    body.night-mode .top-nav {
       background: rgba(26, 26, 46, 0.95);
-      border-right-color: #333;
     }
     
-    body.night-mode .timeline-item {
-      border-left-color: #555;
-    }
-    
-    body.night-mode .timeline-item.active {
-      border-left-color: #667eea;
-    }
-    
-    body.night-mode .timeline-date {
-      color: #aaa;
-    }
-    
-    body.night-mode .timeline-item.active .timeline-date {
+    .nav-title {
+      font-size: 1.5rem;
+      font-weight: bold;
       color: #667eea;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     
-    body.night-mode .tweet-card {
-      background: #1a1a2e;
-      color: #eee;
+    .nav-menu {
+      display: flex;
+      gap: 10px;
     }
     
-    body.night-mode .tweet-content {
-      color: #eee;
-    }
-    
-    body.night-mode .tweet-translation {
-      color: #aaa;
-      border-top-color: #333;
-    }
-    
-    body.night-mode .tweet-time {
-      color: #888;
-    }
-    
-    body.night-mode .password-container {
-      background: #1a1a2e;
-      color: #eee;
-    }
-    
-    body.night-mode .password-container h2 {
+    .nav-btn {
+      padding: 8px 20px;
+      border: 2px solid #667eea;
+      background: transparent;
       color: #667eea;
-    }
-    
-    body.night-mode .password-container p {
-      color: #aaa;
-    }
-    
-    body.night-mode .password-input {
-      background: #0f0f23;
-      border-color: #333;
-      color: #eee;
-    }
-    
-    /* 密码输入界面 */
-    .password-container {
-      background: white;
       border-radius: 20px;
-      padding: 40px;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-      text-align: center;
-      max-width: 400px;
-      width: 100%;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+      font-weight: 500;
     }
-    .password-container h2 {
-      color: #667eea;
-      margin-bottom: 20px;
-      font-size: 1.8rem;
+    
+    .nav-btn:hover {
+      background: #667eea;
+      color: white;
     }
-    .password-container p {
-      color: #666;
-      margin-bottom: 25px;
+    
+    .nav-btn.active {
+      background: #667eea;
+      color: white;
     }
-    .password-input {
-      width: 100%;
-      padding: 15px;
-      border: 2px solid #ddd;
-      border-radius: 10px;
-      font-size: 1rem;
-      margin-bottom: 15px;
-      transition: border-color 0.3s;
-    }
-    .password-input:focus {
-      outline: none;
+    
+    body.night-mode .nav-btn {
+      color: #eee;
       border-color: #667eea;
     }
-    .password-btn {
-      width: 100%;
-      padding: 15px;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    
+    body.night-mode .nav-btn:hover,
+    body.night-mode .nav-btn.active {
+      background: #667eea;
       color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: bold;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-    .password-btn:hover {
-      transform: translateY(-2px);
-    }
-    .error-msg {
-      color: #e74c3c;
-      margin-top: 10px;
-      font-size: 0.9rem;
-      display: none;
     }
     
-    /* 内容区域 - 主布局 */
-    .content {
-      display: none;
-      width: 100%;
-      max-width: 1400px;
-      height: 90vh;
-    }
-    .content.unlocked {
+    /* 主内容区 */
+    .main-content {
       display: flex;
       gap: 20px;
-    }
-    body.unlocked {
-      align-items: flex-start;
-      padding-top: 40px;
+      padding: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
     }
     
     /* 左侧时间线 */
     .timeline {
-      width: 250px;
+      width: 280px;
       background: rgba(255, 255, 255, 0.95);
       border-radius: 12px;
       padding: 20px;
-      height: 90vh;
+      height: calc(100vh - 100px);
       overflow-y: auto;
       position: sticky;
-      top: 20px;
+      top: 80px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      border-right: 3px solid #667eea;
+    }
+    
+    body.night-mode .timeline {
+      background: rgba(26, 26, 46, 0.95);
     }
     
     .timeline-title {
       font-size: 1.2rem;
       font-weight: bold;
       color: #667eea;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       text-align: center;
       padding-bottom: 10px;
       border-bottom: 2px solid #667eea;
@@ -198,14 +141,13 @@
     }
     
     .timeline-date {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #666;
-      display: block;
       margin-bottom: 5px;
     }
     
-    .timeline-item.active .timeline-date {
-      color: #667eea;
+    body.night-mode .timeline-date {
+      color: #aaa;
     }
     
     .timeline-preview {
@@ -216,43 +158,11 @@
       white-space: nowrap;
     }
     
-    /* 右侧推文区域 */
+    /* 右侧推文区 */
     .tweets-area {
       flex: 1;
       overflow-y: auto;
-      height: 90vh;
-      padding-right: 10px;
-    }
-    
-    /* 滚动条样式 */
-    .timeline::-webkit-scrollbar,
-    .tweets-area::-webkit-scrollbar {
-      width: 8px;
-    }
-    
-    .timeline::-webkit-scrollbar-track,
-    .tweets-area::-webkit-scrollbar-track {
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
-    }
-    
-    .timeline::-webkit-scrollbar-thumb,
-    .tweets-area::-webkit-scrollbar-thumb {
-      background: rgba(102, 126, 234, 0.5);
-      border-radius: 10px;
-    }
-    
-    .timeline::-webkit-scrollbar-thumb:hover,
-    .tweets-area::-webkit-scrollbar-thumb:hover {
-      background: rgba(102, 126, 234, 0.8);
-    }
-    
-    h1 {
-      color: white;
-      text-align: center;
-      margin-bottom: 30px;
-      font-size: 2.5rem;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+      height: calc(100vh - 100px);
     }
     
     .tweet-card {
@@ -261,8 +171,13 @@
       padding: 20px;
       margin-bottom: 20px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: all 0.2s;
       scroll-margin-top: 20px;
+    }
+    
+    body.night-mode .tweet-card {
+      background: #1a1a2e;
+      color: #eee;
     }
     
     .tweet-card:hover {
@@ -288,6 +203,10 @@
       font-size: 0.9rem;
     }
     
+    body.night-mode .tweet-time {
+      color: #888;
+    }
+    
     .media-icon {
       font-size: 1.2rem;
       margin-left: auto;
@@ -296,32 +215,23 @@
     .tweet-content {
       color: #333;
       line-height: 1.6;
-      margin-bottom: 8px;
+      margin-bottom: 15px;
       white-space: pre-wrap;
     }
     
-    .tweet-translation {
-      color: #666;
-      line-height: 1.6;
-      margin-bottom: 15px;
-      font-size: 0.95rem;
-      padding-top: 8px;
-      border-top: 1px dashed #e0e0e0;
-    }
-    
-    .tweet-footer {
-      text-align: right;
+    body.night-mode .tweet-content {
+      color: #eee;
     }
     
     .tweet-link {
       color: #1da1f2;
       text-decoration: none;
-      font-size: 0.9rem;
       padding: 5px 15px;
       border: 1px solid #1da1f2;
       border-radius: 20px;
       display: inline-block;
       transition: all 0.2s;
+      font-size: 0.9rem;
     }
     
     .tweet-link:hover {
@@ -329,17 +239,100 @@
       color: white;
     }
     
-    .update-time {
-      text-align: center;
-      color: rgba(255,255,255,0.8);
-      margin-top: 20px;
-      font-size: 0.9rem;
-      padding: 20px;
+    .featured-badge {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      margin-left: 10px;
     }
     
-    /* 响应式设计 */
+    .loading {
+      text-align: center;
+      color: white;
+      padding: 40px;
+      font-size: 1.2rem;
+    }
+    
+    .stats {
+      text-align: center;
+      color: rgba(255,255,255,0.9);
+      padding: 20px;
+      font-size: 0.9rem;
+    }
+    
+    /* 月份筛选下拉菜单 */
+    .month-selector {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .month-dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      margin-top: 5px;
+      min-width: 150px;
+      z-index: 1001;
+    }
+    
+    body.night-mode .month-dropdown {
+      background: #1a1a2e;
+    }
+    
+    .month-selector:hover .month-dropdown {
+      display: block;
+    }
+    
+    .month-option {
+      padding: 10px 20px;
+      cursor: pointer;
+      transition: background 0.2s;
+      color: #333;
+    }
+    
+    body.night-mode .month-option {
+      color: #eee;
+    }
+    
+    .month-option:hover {
+      background: rgba(102, 126, 234, 0.1);
+    }
+    
+    .month-option:first-child {
+      border-radius: 8px 8px 0 0;
+    }
+    
+    .month-option:last-child {
+      border-radius: 0 0 8px 8px;
+    }
+    
+    /* 滚动条 */
+    .timeline::-webkit-scrollbar,
+    .tweets-area::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .timeline::-webkit-scrollbar-track,
+    .tweets-area::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+    
+    .timeline::-webkit-scrollbar-thumb,
+    .tweets-area::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, 0.5);
+      border-radius: 10px;
+    }
+    
+    /* 响应式 */
     @media (max-width: 768px) {
-      .content.unlocked {
+      .main-content {
         flex-direction: column;
       }
       .timeline {
@@ -347,247 +340,64 @@
         height: auto;
         max-height: 200px;
         position: relative;
-        margin-bottom: 20px;
+        top: 0;
       }
       .tweets-area {
         height: auto;
+      }
+      .nav-menu {
+        flex-wrap: wrap;
       }
     }
   </style>
 </head>
 <body>
-  <!-- 密码输入界面 -->
-  <div class="password-container" id="passwordScreen">
-    <h2>🔐 访问验证</h2>
-    <p>请输入密码访问 Elon Musk 推文合集</p>
-    <input type="password" class="password-input" id="passwordInput" placeholder="请输入密码" />
-    <button class="password-btn" onclick="checkPassword()">解锁</button>
-    <div class="error-msg" id="errorMsg">❌ 密码错误，请重试</div>
+  <!-- 顶部导航栏 -->
+  <div class="top-nav">
+    <div class="nav-title">
+      🚀 Elon Musk 推文合集
+    </div>
+    <div class="nav-menu">
+      <button class="nav-btn active" onclick="filterTweets('all')">所有推文</button>
+      <button class="nav-btn" onclick="filterTweets('featured')">精选推文</button>
+      <div class="month-selector">
+        <button class="nav-btn">按月份 ▾</button>
+        <div class="month-dropdown" id="monthDropdown"></div>
+      </div>
+    </div>
   </div>
 
-  <!-- 内容区域 -->
-  <div class="content" id="contentArea">
+  <!-- 主内容区 -->
+  <div class="main-content">
     <!-- 左侧时间线 -->
     <div class="timeline">
       <div class="timeline-title">📅 时间线</div>
-      <div class="timeline-item active" onclick="scrollToTweet(0)">
-        <span class="timeline-date">2022-04-28 08:56</span>
-        <div class="timeline-preview">Next I'm buying Coca-Cola...</div>
-      </div>
-      <div class="timeline-item" onclick="scrollToTweet(1)">
-        <span class="timeline-date">2022-04-26 00:12</span>
-        <div class="timeline-preview">I hope that even my worst critics...</div>
-      </div>
-      <div class="timeline-item" onclick="scrollToTweet(2)">
-        <span class="timeline-date">2024-11-06 13:01</span>
-        <div class="timeline-preview">The future is gonna be so 🔥</div>
-      </div>
-      <div class="timeline-item" onclick="scrollToTweet(3)">
-        <span class="timeline-date">2022-04-28 09:53</span>
-        <div class="timeline-preview">Let's make Twitter maximum fun!</div>
-      </div>
-      <div class="timeline-item" onclick="scrollToTweet(4)">
-        <span class="timeline-date">2022-04-26 03:43</span>
-        <div class="timeline-preview">🎉 Yesss!!! 🚀</div>
-      </div>
-      <div class="timeline-item" onclick="scrollToTweet(5)">
-        <span class="timeline-date">2022-04-28 09:57</span>
-        <div class="timeline-preview">Listen, I can't do miracles ok</div>
-      </div>
-      <div class="timeline-item" onclick="scrollToTweet(6)">
-        <span class="timeline-date">2024-11-07 00:39</span>
-        <div class="timeline-preview">It is morning in America again</div>
-      </div>
-      <div class="timeline-item" onclick="scrollToTweet(7)">
-        <span class="timeline-date">2022-10-28 11:49</span>
-        <div class="timeline-preview">the bird is freed</div>
-      </div>
-      <div class="timeline-item" onclick="scrollToTweet(8)">
-        <span class="timeline-date">2024-07-14 06:45</span>
-        <div class="timeline-preview">I fully endorse President Trump...</div>
-      </div>
-      <div class="timeline-item" onclick="scrollToTweet(9)">
-        <span class="timeline-date">2024-11-06 13:35</span>
-        <div class="timeline-preview">Let that sink in</div>
-      </div>
-      <div class="timeline-item" onclick="scrollToTweet(10)">
-        <span class="timeline-date">2022-10-29 05:16</span>
-        <div class="timeline-preview">Comedy is now legal on Twitter</div>
-      </div>
-      <div class="timeline-item" onclick="scrollToTweet(11)">
-        <span class="timeline-date">2024-08-14 23:24</span>
-        <div class="timeline-preview">Haters will say this is AI 🤖</div>
-      </div>
+      <div id="timelineContainer"></div>
     </div>
 
-    <!-- 右侧推文区域 -->
-    <div class="tweets-area">
-      <h1>🚀 Elon Musk 推文合集</h1>
-      
-      <div class="tweet-card" id="tweet-0">
-        <div class="tweet-header">
-          <span class="tweet-author">Elon Musk</span>
-          <span class="tweet-time">4月28日 08:56</span>
-          <span class="media-icon">📷</span>
-        </div>
-        <div class="tweet-content">Next I'm buying Coca-Cola to put the cocaine back in</div>
-        <div class="tweet-translation">🇨🇳 下一步我要买下可口可乐，把可卡因加回去</div>
-        <div class="tweet-footer">
-          <a href="https://x.com/elonmusk/status/1519480761749016577" target="_blank" class="tweet-link">查看原推</a>
-        </div>
-      </div>
-
-      <div class="tweet-card" id="tweet-1">
-        <div class="tweet-header">
-          <span class="tweet-author">Elon Musk</span>
-          <span class="tweet-time">4月26日 00:12</span>
-          <span class="media-icon">📷</span>
-        </div>
-        <div class="tweet-content">I hope that even my worst critics remain on Twitter, because that is what free speech means</div>
-        <div class="tweet-translation">🇨🇳 我希望即使是我最严厉的批评者也能留在推特上，因为这就是言论自由的意义</div>
-        <div class="tweet-footer">
-          <a href="https://x.com/elonmusk/status/1518623997054918657" target="_blank" class="tweet-link">查看原推</a>
-        </div>
-      </div>
-
-      <div class="tweet-card" id="tweet-2">
-        <div class="tweet-header">
-          <span class="tweet-author">Elon Musk</span>
-          <span class="tweet-time">11月6日 13:01</span>
-          <span class="media-icon">📷</span>
-        </div>
-        <div class="tweet-content">The future is gonna be so 🔥</div>
-        <div class="tweet-translation">🇨🇳 未来将会如此火爆 🔥</div>
-        <div class="tweet-footer">
-          <a href="https://x.com/elonmusk/status/1854026234339938528" target="_blank" class="tweet-link">查看原推</a>
-        </div>
-      </div>
-
-      <div class="tweet-card" id="tweet-3">
-        <div class="tweet-header">
-          <span class="tweet-author">Elon Musk</span>
-          <span class="tweet-time">4月28日 09:53</span>
-          <span class="media-icon">📷</span>
-        </div>
-        <div class="tweet-content">Let's make Twitter maximum fun!</div>
-        <div class="tweet-translation">🇨🇳 让我们让推特变得超级有趣！</div>
-        <div class="tweet-footer">
-          <a href="https://x.com/elonmusk/status/1519495072802390016" target="_blank" class="tweet-link">查看原推</a>
-        </div>
-      </div>
-
-      <div class="tweet-card" id="tweet-4">
-        <div class="tweet-header">
-          <span class="tweet-author">Elon Musk</span>
-          <span class="tweet-time">4月26日 03:43</span>
-          <span class="media-icon">📷</span>
-        </div>
-        <div class="tweet-content">🎉 Yesss!!! 🚀</div>
-        <div class="tweet-translation">🇨🇳 耶！！！成了！🚀</div>
-        <div class="tweet-footer">
-          <a href="https://x.com/elonmusk/status/1518677066325053441" target="_blank" class="tweet-link">查看原推</a>
-        </div>
-      </div>
-
-      <div class="tweet-card" id="tweet-5">
-        <div class="tweet-header">
-          <span class="tweet-author">Elon Musk</span>
-          <span class="tweet-time">4月28日 09:57</span>
-          <span class="media-icon">📷</span>
-        </div>
-        <div class="tweet-content">Listen, I can't do miracles ok</div>
-        <div class="tweet-translation">🇨🇳 听着，我又不能创造奇迹</div>
-        <div class="tweet-footer">
-          <a href="https://x.com/elonmusk/status/1519495982723084290" target="_blank" class="tweet-link">查看原推</a>
-        </div>
-      </div>
-
-      <div class="tweet-card" id="tweet-6">
-        <div class="tweet-header">
-          <span class="tweet-author">Elon Musk</span>
-          <span class="tweet-time">11月7日 00:39</span>
-          <span class="media-icon">📷</span>
-        </div>
-        <div class="tweet-content">It is morning in America again</div>
-        <div class="tweet-translation">🇨🇳 美国的清晨再次来临</div>
-        <div class="tweet-footer">
-          <a href="https://x.com/elonmusk/status/1854201929519247803" target="_blank" class="tweet-link">查看原推</a>
-        </div>
-      </div>
-
-      <div class="tweet-card" id="tweet-7">
-        <div class="tweet-header">
-          <span class="tweet-author">Elon Musk</span>
-          <span class="tweet-time">10月28日 11:49</span>
-          <span class="media-icon">📷</span>
-        </div>
-        <div class="tweet-content">the bird is freed</div>
-        <div class="tweet-translation">🇨🇳 小鸟自由了（指推特收购完成）</div>
-        <div class="tweet-footer">
-          <a href="https://x.com/elonmusk/status/1585841080431321088" target="_blank" class="tweet-link">查看原推</a>
-        </div>
-      </div>
-
-      <div class="tweet-card" id="tweet-8">
-        <div class="tweet-header">
-          <span class="tweet-author">Elon Musk</span>
-          <span class="tweet-time">7月14日 06:45</span>
-          <span class="media-icon">🎥</span>
-        </div>
-        <div class="tweet-content">I fully endorse President Trump and hope for his rapid recovery</div>
-        <div class="tweet-translation">🇨🇳 我完全支持特朗普总统，并希望他早日康复</div>
-        <div class="tweet-footer">
-          <a href="https://x.com/elonmusk/status/1812256998588662068" target="_blank" class="tweet-link">查看原推</a>
-        </div>
-      </div>
-
-      <div class="tweet-card" id="tweet-9">
-        <div class="tweet-header">
-          <span class="tweet-author">Elon Musk</span>
-          <span class="tweet-time">11月6日 13:35</span>
-          <span class="media-icon">📷</span>
-        </div>
-        <div class="tweet-content">Let that sink in</div>
-        <div class="tweet-translation">🇨🇳 好好想想这个（双关：sink=水槽，也指"理解、领悟"）</div>
-        <div class="tweet-footer">
-          <a href="https://x.com/elonmusk/status/1854034776815972649" target="_blank" class="tweet-link">查看原推</a>
-        </div>
-      </div>
-
-      <div class="tweet-card" id="tweet-10">
-        <div class="tweet-header">
-          <span class="tweet-author">Elon Musk</span>
-          <span class="tweet-time">10月29日 05:16</span>
-          <span class="media-icon">📷</span>
-        </div>
-        <div class="tweet-content">Comedy is now legal on Twitter</div>
-        <div class="tweet-translation">🇨🇳 喜剧现在在推特上合法了</div>
-        <div class="tweet-footer">
-          <a href="https://x.com/elonmusk/status/1586104694421659648" target="_blank" class="tweet-link">查看原推</a>
-        </div>
-      </div>
-
-      <div class="tweet-card" id="tweet-11">
-        <div class="tweet-header">
-          <span class="tweet-author">Elon Musk</span>
-          <span class="tweet-time">8月14日 23:24</span>
-          <span class="media-icon">🎥</span>
-        </div>
-        <div class="tweet-content">Haters will say this is AI 🤖</div>
-        <div class="tweet-translation">🇨🇳 黑子们会说这是AI生成的 🤖</div>
-        <div class="tweet-footer">
-          <a href="https://x.com/elonmusk/status/1823742501884453312" target="_blank" class="tweet-link">查看原推</a>
-        </div>
-      </div>
-
-      <div class="update-time">
-        最后更新: 2026/4/5 20:35 | 含中英双语翻译 | ☀️🌙 自动切换主题 | 📅 时间线导航
-      </div>
+    <!-- 右侧推文区 -->
+    <div class="tweets-area" id="tweetsArea">
+      <div class="loading">⏳ 加载推文中...</div>
     </div>
   </div>
 
+  <div class="stats" id="stats"></div>
+
   <script>
-    // 根据北京时间自动切换白天/黑夜模式
+    let allTweets = [];
+    let currentFilter = 'all';
+    let currentMonth = null;
+    
+    // 精选推文ID列表（手动标记）
+    const featuredIds = [
+      '1519480761749016577',  // Coca-Cola cocaine
+      '1585841080431321088',  // the bird is freed
+      '1812256998588662068',  // Trump endorsement
+      '1518623997054918657',  // free speech
+      '1519495072802390016'   // maximum fun
+    ];
+    
+    // 夜间模式
     function updateTheme() {
       const now = new Date();
       const beijingTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Shanghai' }));
@@ -603,49 +413,140 @@
     updateTheme();
     setInterval(updateTheme, 60000);
     
-    // 密码验证
-    const correctPasswordHash = "f930e80174d069bfa09469f79568458e3311978264039f6abcb66ffd0c91c46d";
-    
-    if (sessionStorage.getItem('unlocked') === 'true') {
-      unlockContent();
+    // 加载推文数据
+    async function loadTweets() {
+      try {
+        const response = await fetch('data/tweets-raw.json');
+        allTweets = await response.json();
+        
+        // 标记精选推文
+        allTweets.forEach(tweet => {
+          const tweetId = tweet.link.split('/').pop();
+          tweet.featured = featuredIds.includes(tweetId);
+        });
+        
+        // 按时间排序（最新在前）
+        allTweets.sort((a, b) => new Date(b.time) - new Date(a.time));
+        
+        // 生成月份列表
+        generateMonthList();
+        
+        // 显示推文
+        filterTweets('all');
+      } catch (e) {
+        document.getElementById('tweetsArea').innerHTML = 
+          '<div class="loading">❌ 加载失败: ' + e.message + '</div>';
+      }
     }
     
-    document.getElementById('passwordInput').addEventListener('keypress', function(e) {
-      if (e.key === 'Enter') {
-        checkPassword();
-      }
-    });
-    
-    async function checkPassword() {
-      const input = document.getElementById('passwordInput').value;
-      const hash = await sha256(input);
+    // 生成月份下拉菜单
+    function generateMonthList() {
+      const months = new Set();
+      allTweets.forEach(tweet => {
+        const date = new Date(tweet.time);
+        const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        months.add(monthKey);
+      });
       
-      if (hash === correctPasswordHash) {
-        sessionStorage.setItem('unlocked', 'true');
-        unlockContent();
-      } else {
-        document.getElementById('errorMsg').style.display = 'block';
-        document.getElementById('passwordInput').value = '';
-        setTimeout(() => {
-          document.getElementById('errorMsg').style.display = 'none';
-        }, 2000);
+      const monthArray = Array.from(months).sort().reverse();
+      const dropdown = document.getElementById('monthDropdown');
+      
+      dropdown.innerHTML = monthArray.map(month => 
+        `<div class="month-option" onclick="filterByMonth('${month}')">${month}</div>`
+      ).join('');
+    }
+    
+    // 筛选推文
+    function filterTweets(type) {
+      currentFilter = type;
+      currentMonth = null;
+      
+      // 更新按钮状态
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      event.target.classList.add('active');
+      
+      let filtered = allTweets;
+      
+      if (type === 'featured') {
+        filtered = allTweets.filter(t => t.featured);
       }
+      
+      displayTweets(filtered);
     }
     
-    function unlockContent() {
-      document.getElementById('passwordScreen').style.display = 'none';
-      document.getElementById('contentArea').classList.add('unlocked');
-      document.body.classList.add('unlocked');
+    // 按月份筛选
+    function filterByMonth(month) {
+      currentFilter = 'month';
+      currentMonth = month;
+      
+      // 更新按钮状态
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      const filtered = allTweets.filter(tweet => {
+        const date = new Date(tweet.time);
+        const tweetMonth = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        return tweetMonth === month;
+      });
+      
+      displayTweets(filtered);
     }
     
-    async function sha256(message) {
-      const msgBuffer = new TextEncoder().encode(message);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-      const hashArray = Array.from(new Uint8Array(hashBuffer));
-      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    // 显示推文
+    function displayTweets(tweets) {
+      const tweetsArea = document.getElementById('tweetsArea');
+      const timelineContainer = document.getElementById('timelineContainer');
+      
+      if (tweets.length === 0) {
+        tweetsArea.innerHTML = '<div class="loading">😕 没有找到推文</div>';
+        timelineContainer.innerHTML = '';
+        document.getElementById('stats').innerHTML = '暂无数据';
+        return;
+      }
+      
+      // 生成推文卡片
+      tweetsArea.innerHTML = tweets.map((tweet, index) => {
+        const date = new Date(tweet.time);
+        const formattedDate = `${date.getMonth() + 1}月${date.getDate()}日 ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        
+        return `
+          <div class="tweet-card" id="tweet-${index}">
+            <div class="tweet-header">
+              <span class="tweet-author">Elon Musk</span>
+              <span class="tweet-time">${formattedDate}</span>
+              ${tweet.featured ? '<span class="featured-badge">⭐ 精选</span>' : ''}
+              <span class="media-icon">${tweet.mediaType || ''}</span>
+            </div>
+            <div class="tweet-content">${tweet.text || '(纯图片/视频推文)'}</div>
+            <a href="${tweet.link}" target="_blank" class="tweet-link">查看原推</a>
+          </div>
+        `;
+      }).join('');
+      
+      // 生成时间线
+      timelineContainer.innerHTML = tweets.map((tweet, index) => {
+        const date = new Date(tweet.time);
+        const shortDate = `${date.getMonth() + 1}/${date.getDate()} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        const preview = tweet.text.substring(0, 30) || '(图片/视频)';
+        
+        return `
+          <div class="timeline-item ${index === 0 ? 'active' : ''}" onclick="scrollToTweet(${index})">
+            <div class="timeline-date">${shortDate}</div>
+            <div class="timeline-preview">${preview}...</div>
+          </div>
+        `;
+      }).join('');
+      
+      // 更新统计
+      const featuredCount = tweets.filter(t => t.featured).length;
+      document.getElementById('stats').innerHTML = 
+        `共 ${tweets.length} 条推文 | ${featuredCount} 条精选 | 最后更新: ${new Date().toLocaleDateString('zh-CN')}`;
     }
     
-    // 时间线导航功能
+    // 滚动到指定推文
     function scrollToTweet(index) {
       const tweet = document.getElementById('tweet-' + index);
       if (tweet) {
@@ -660,7 +561,7 @@
           }
         });
         
-        // 临时高亮推文卡片
+        // 临时高亮推文
         tweet.style.boxShadow = '0 0 20px rgba(102, 126, 234, 0.5)';
         setTimeout(() => {
           tweet.style.boxShadow = '';
@@ -668,9 +569,9 @@
       }
     }
     
-    // 监听滚动，自动更新时间线高亮
+    // 监听滚动，自动更新时间线
     let scrollTimeout;
-    document.querySelector('.tweets-area').addEventListener('scroll', function() {
+    document.getElementById('tweetsArea').addEventListener('scroll', function() {
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => {
         const cards = document.querySelectorAll('.tweet-card');
@@ -692,6 +593,9 @@
         });
       }, 100);
     });
+    
+    // 页面加载时初始化
+    loadTweets();
   </script>
 </body>
 </html>
