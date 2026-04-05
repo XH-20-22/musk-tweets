@@ -1,83 +1,125 @@
-# Musk Tweets Auto-Update System
+# Elon Musk 推文合集
 
-自动抓取 Elon Musk 推文并发布到 GitHub Pages 的系统。
+自动抓取和展示 Elon Musk X.com (Twitter) 推文的系统。
 
-## 📁 项目结构
+## 🔗 在线访问
+
+- **GitHub Pages**: https://xh-20-22.github.io/musk-tweets/
+- **密码**: musk2026
+
+## ✨ 功能特性
+
+- 📅 **时间线导航** - 左侧按年月分组显示
+- 🌙 **夜间模式** - 根据北京时间自动切换（18:00-6:00）
+- 📱 **响应式设计** - 支持手机/平板访问
+- 🔐 **密码保护** - 防止未授权访问
+- 📊 **统计信息** - 显示总数、月份分布等
+
+## 📂 项目结构
 
 ```
 ~/musk-tweets/
-├── public/
-│   └── index.html           # 展示页面
-├── scripts/
-│   ├── auto-update.sh       # 自动更新脚本（主脚本）
-│   ├── fetch-tweets.js      # 推文抓取脚本
-│   └── update-html.js       # HTML 页面生成脚本
+├── index.html                  # 主页面
 ├── data/
-│   ├── tweets-raw.json      # 抓取的原始推文数据
-│   └── extract-tweets-v2.js # 浏览器端提取脚本
-└── README.md
+│   └── tweets-raw.json         # 推文数据
+├── scripts/
+│   ├── fetch-2024-now.sh       # 抓取脚本（2024至今）
+│   └── fetch-2025-now.sh       # 抓取脚本（2025至今）
+└── logs/                       # 抓取日志
 ```
-
-## ✅ 已完成功能
-
-1. ✅ **推文抓取** - 使用 Playwright MCP + OpenClaw browser-operation skill
-2. ✅ **数据提取** - 提取推文文本、时间、链接、媒体类型（📷🎥）
-3. ✅ **HTML 生成** - 自动生成精美的展示页面
-4. ✅ **Git 版本控制** - 已初始化 Git 仓库
 
 ## 🚀 使用方法
 
-### 手动更新
+### 更新推文数据
 
 ```bash
 cd ~/musk-tweets
-./scripts/auto-update.sh
+
+# 抓取 2024 年至今的所有推文
+./scripts/fetch-2024-now.sh
+
+# 或抓取 2025 年至今的所有推文
+./scripts/fetch-2025-now.sh
 ```
 
-### 自动定时更新（OpenClaw Cron）
+### 本地预览
 
-已配置 cron job：`Musk Tweets Auto-Update`
-- 执行脚本：`~/musk-tweets/scripts/auto-update.sh`
-- 可通过 OpenClaw 管理定时任务
+```bash
+open index.html
+```
 
-## 📊 当前数据
+### 部署到 GitHub Pages
 
-- **已抓取推文数：** 15 条
-- **最后更新时间：** 2026-04-05 19:20 (Asia/Shanghai)
-- **数据来源：** https://x.com/elonmusk
+```bash
+git add .
+git commit -m "Update tweets"
+git push
+```
 
-## 🔧 技术栈
+GitHub Pages 会在 1-3 分钟内自动更新。
 
-- **浏览器自动化：** Playwright MCP Server (port 9090)
-- **AI 助手：** OpenClaw (内网版) + 工蜂 AI
-- **Skills：** browser-operation
-- **部署：** GitHub Pages（待配置）
+## 🎨 自定义
 
-## 📝 下一步计划
+### 修改密码
 
-- [ ] 配置 GitHub Pages 自动部署
-- [ ] 添加推文翻译功能
-- [ ] 优化页面样式（响应式设计）
-- [ ] 增加数据去重和错误处理
-- [ ] 添加更多数据统计（点赞数、转发数等）
+在 `index.html` 中搜索 `correctPasswordHash`，使用以下方法生成新密码的 SHA-256 哈希：
 
-## 🎯 任务执行记录
+```bash
+echo -n "你的新密码" | shasum -a 256
+```
 
-### 2026-04-05 19:18-19:22 (首次运行)
+将输出的哈希值替换到代码中。
 
-✅ 成功执行：
-1. 启动 Playwright MCP Server
-2. 访问 https://x.com/elonmusk
-3. 提取 15 条推文
-4. 生成 HTML 页面
-5. Git 初始化和提交
+### 修改时间范围
 
-📊 数据质量：
-- 推文文本完整保留（包括 emoji）
-- 时间戳准确（ISO 8601 格式）
-- 媒体类型标识正常（📷 图片 / 🎥 视频）
+编辑 `scripts/fetch-*.sh` 中的 `targetStartDate`：
+
+```javascript
+const targetStartDate = new Date('2024-01-01T00:00:00Z');  // 修改起始日期
+```
+
+## 📊 数据格式
+
+`data/tweets-raw.json` 格式：
+
+```json
+[
+  {
+    "text": "推文内容",
+    "time": "2024-11-06T05:01:15.000Z",
+    "link": "https://x.com/elonmusk/status/...",
+    "mediaType": "📷"  // 或 "🎥" 表示视频
+  }
+]
+```
+
+## 🛠️ 技术栈
+
+- **前端**: 纯 HTML + CSS + JavaScript（无框架）
+- **浏览器自动化**: Playwright MCP Server
+- **部署**: GitHub Pages
+- **抓取工具**: OpenClaw + browser-operation skill
+
+## 📝 更新日志
+
+### 2026-04-05
+- ✅ 简化左侧时间线为按年月显示
+- ✅ 移除顶部菜单栏
+- ✅ 优化页面布局
+- ✅ 创建 2024-now 和 2025-now 抓取脚本
+
+### 2026-04-05 (早期)
+- ✅ 添加左侧时间线
+- ✅ 添加顶部菜单栏（所有/精选/月份）
+- ✅ 实现精选推文功能
+- ✅ 部署到 GitHub Pages
+
+## 📄 许可
+
+MIT License
 
 ---
 
-**Created by T1** 🚀
-Powered by OpenClaw (内网版) + 工蜂 AI
+**作者**: T1 🚀  
+**创建日期**: 2026-04-05  
+**GitHub**: https://github.com/XH-20-22/musk-tweets
