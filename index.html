@@ -53,7 +53,7 @@
       color: #aaa;
     }
     
-    /* 时间线显示/隐藏按钮 - 透明背景 */
+    /* 时间线显示/隐藏按钮 - 与时间线同色 */
     .timeline-toggle {
       position: fixed;
       left: 0;
@@ -61,7 +61,7 @@
       transform: translateY(-50%);
       width: 24px;
       height: 60px;
-      background: rgba(102, 126, 234, 0.2);
+      background: rgba(255, 255, 255, 0.95);
       border-radius: 0 8px 8px 0;
       display: flex;
       align-items: center;
@@ -69,11 +69,15 @@
       cursor: pointer;
       z-index: 1001;
       transition: all 0.3s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    body.night-mode .timeline-toggle {
+      background: rgba(26, 26, 46, 0.95);
     }
     
     .timeline-toggle:hover {
       width: 28px;
-      background: rgba(102, 126, 234, 0.4);
     }
     
     /* 尖头（始终显示）- 蓝色 */
@@ -287,27 +291,56 @@
       display: flex;
       align-items: center;
       margin-bottom: 12px;
-      gap: 10px;
+      gap: 8px;
     }
     
     .tweet-author {
       font-weight: bold;
       color: #1da1f2;
       font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    /* 验证图标 */
+    .verified-badge {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      background: #1da1f2;
+      border-radius: 50%;
+      position: relative;
+    }
+    
+    .verified-badge::after {
+      content: '✓';
+      position: absolute;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    
+    /* 平台图标 */
+    .platform-badge {
+      font-size: 16px;
     }
     
     .tweet-time {
-      color: #666;
-      font-size: 0.9rem;
+      color: #999;
+      font-size: 0.85rem;
+      margin-left: auto;
     }
     
     body.night-mode .tweet-time {
-      color: #888;
+      color: #999;
     }
     
     .media-icon {
       font-size: 1.2rem;
-      margin-left: auto;
     }
     
     .tweet-content {
@@ -325,7 +358,7 @@
     .tweet-translation {
       color: #666;
       line-height: 1.6;
-      margin-bottom: 15px;
+      margin-bottom: 8px;
       font-size: 0.95rem;
       padding-top: 8px;
       border-top: 1px dashed #e0e0e0;
@@ -336,11 +369,68 @@
       border-top-color: #333;
     }
     
+    /* 详细时间戳 */
+    .tweet-timestamp {
+      color: #999;
+      font-size: 0.8rem;
+      margin-bottom: 12px;
+    }
+    
+    body.night-mode .tweet-timestamp {
+      color: #777;
+    }
+    
+    /* 统计数据栏 */
+    .tweet-stats {
+      display: flex;
+      gap: 20px;
+      padding: 12px 0;
+      border-top: 1px solid #e0e0e0;
+      border-bottom: 1px solid #e0e0e0;
+      margin-bottom: 12px;
+    }
+    
+    body.night-mode .tweet-stats {
+      border-color: #333;
+    }
+    
+    .stat-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: #666;
+      font-size: 0.9rem;
+    }
+    
+    body.night-mode .stat-item {
+      color: #888;
+    }
+    
+    .stat-icon {
+      font-size: 1rem;
+      color: #999;
+    }
+    
+    .stat-count {
+      font-weight: 500;
+      color: #333;
+    }
+    
+    body.night-mode .stat-count {
+      color: #ccc;
+    }
+    
+    /* 操作按钮 */
+    .tweet-actions {
+      display: flex;
+      gap: 12px;
+    }
+    
     .tweet-link {
       color: #1da1f2;
       text-decoration: none;
       padding: 6px 18px;
-      border: 1px solid #1da1f2;
+      border: 1px solid rgba(29, 161, 242, 0.3);
       border-radius: 20px;
       display: inline-block;
       transition: all 0.2s;
@@ -348,8 +438,24 @@
     }
     
     .tweet-link:hover {
-      background: #1da1f2;
-      color: white;
+      background: rgba(29, 161, 242, 0.1);
+      border-color: #1da1f2;
+    }
+    
+    .tweet-share {
+      color: #657786;
+      text-decoration: none;
+      padding: 6px 18px;
+      border: 1px solid rgba(101, 119, 134, 0.3);
+      border-radius: 20px;
+      display: inline-block;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+    }
+    
+    .tweet-share:hover {
+      background: rgba(101, 119, 134, 0.1);
+      border-color: #657786;
     }
     
     .loading {
@@ -459,6 +565,26 @@
       '1593459801966538755': '（图片）',
       '1823742501884453312': '黑子们会说这是AI生成的 🤖',
       '1932695486684950962': '我对上周关于特朗普总统的一些推文感到后悔。它们太过分了。'
+    };
+    
+    // 推文统计数据（模拟数据）
+    const tweetStats = {
+      '1519480761749016577': { views: '125.8M', retweets: '428.5K', likes: '2.1M', bookmarks: '89.2K' },
+      '1812258574049157405': { views: '89.2M', retweets: '156.3K', likes: '1.5M', bookmarks: '42.1K' },
+      '1518623997054918657': { views: '156.3M', retweets: '892.1K', likes: '3.2M', bookmarks: '156.8K' },
+      '1854026234339938528': { views: '67.5M', retweets: '89.2K', likes: '892.5K', bookmarks: '28.9K' },
+      '1519495072802390016': { views: '92.1M', retweets: '256.8K', likes: '1.8M', bookmarks: '67.3K' },
+      '1518677066325053441': { views: '142.6M', retweets: '689.5K', likes: '2.8M', bookmarks: '128.4K' },
+      '1519495982723084290': { views: '78.9M', retweets: '125.6K', likes: '1.2M', bookmarks: '38.7K' },
+      '1854201929519247803': { views: '98.4M', retweets: '289.3K', likes: '1.9M', bookmarks: '76.5K' },
+      '1585841080431321088': { views: '198.7M', retweets: '956.2K', likes: '4.2M', bookmarks: '245.3K' },
+      '1812256998588662068': { views: '156.9M', retweets: '428.7K', likes: '2.5M', bookmarks: '98.6K' },
+      '1854034776815972649': { views: '112.3M', retweets: '328.9K', likes: '2.1M', bookmarks: '82.4K' },
+      '1586104694421659648': { views: '89.6M', retweets: '198.4K', likes: '1.6M', bookmarks: '56.8K' },
+      '1820685675899072930': { views: '76.2M', retweets: '142.5K', likes: '1.1M', bookmarks: '38.9K' },
+      '1593459801966538755': { views: '65.8M', retweets: '98.7K', likes: '892.3K', bookmarks: '29.6K' },
+      '1823742501884453312': { views: '92.5M', retweets: '225.6K', likes: '1.7M', bookmarks: '68.4K' },
+      '1932695486684950962': { views: '128.4M', retweets: '386.9K', likes: '2.3M', bookmarks: '95.7K' }
     };
     
     // 夜间模式
@@ -586,18 +712,52 @@
       
       tweetsArea.innerHTML = allTweets.map((tweet, index) => {
         const date = new Date(tweet.time);
-        const formattedDate = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        const tweetId = tweet.link.split('/').pop();
+        const stats = tweetStats[tweetId] || { views: '-', retweets: '-', likes: '-', bookmarks: '-' };
+        
+        // 简短时间（顶部）
+        const shortTime = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+        
+        // 详细时间戳（翻译下方）
+        const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+        const detailedTime = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${weekdays[date.getDay()]} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
         
         return `
           <div class="tweet-card" id="tweet-${index}" data-time="${tweet.time}">
             <div class="tweet-header">
-              <span class="tweet-author">Elon Musk</span>
-              <span class="tweet-time">${formattedDate}</span>
+              <span class="tweet-author">
+                Elon Musk
+                <span class="verified-badge"></span>
+                <span class="platform-badge">𝕏</span>
+              </span>
+              <span class="tweet-time">${shortTime}</span>
               <span class="media-icon">${tweet.mediaType || ''}</span>
             </div>
             <div class="tweet-content">${tweet.text || '(纯图片/视频推文)'}</div>
             ${tweet.translation ? `<div class="tweet-translation">译：${tweet.translation}</div>` : ''}
-            <a href="${tweet.link}" target="_blank" class="tweet-link">查看原推 →</a>
+            <div class="tweet-timestamp">${detailedTime}</div>
+            <div class="tweet-stats">
+              <div class="stat-item">
+                <span class="stat-icon">👁</span>
+                <span class="stat-count">${stats.views}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-icon">🔁</span>
+                <span class="stat-count">${stats.retweets}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-icon">❤️</span>
+                <span class="stat-count">${stats.likes}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-icon">🔖</span>
+                <span class="stat-count">${stats.bookmarks}</span>
+              </div>
+            </div>
+            <div class="tweet-actions">
+              <a href="${tweet.link}" target="_blank" class="tweet-link">查看原推</a>
+              <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(tweet.link)}" target="_blank" class="tweet-share">分享推文</a>
+            </div>
           </div>
         `;
       }).join('');
