@@ -53,7 +53,7 @@
       color: #aaa;
     }
     
-    /* 时间线显示/隐藏按钮 - 简化尖头 */
+    /* 时间线显示/隐藏按钮 - 透明背景 */
     .timeline-toggle {
       position: fixed;
       left: 0;
@@ -61,7 +61,7 @@
       transform: translateY(-50%);
       width: 24px;
       height: 60px;
-      background: #667eea;
+      background: rgba(102, 126, 234, 0.2);
       border-radius: 0 8px 8px 0;
       display: flex;
       align-items: center;
@@ -73,18 +73,22 @@
     
     .timeline-toggle:hover {
       width: 28px;
-      background: #5568d3;
+      background: rgba(102, 126, 234, 0.4);
     }
     
-    /* 尖头（始终显示） */
+    /* 尖头（始终显示）- 蓝色 */
     .timeline-toggle::after {
       content: '';
       width: 0;
       height: 0;
       border-style: solid;
       border-width: 6px 0 6px 8px;
-      border-color: transparent transparent transparent white;
+      border-color: transparent transparent transparent #667eea;
       transition: transform 0.3s;
+    }
+    
+    .timeline-toggle:hover::after {
+      border-left-color: #5568d3;
     }
     
     /* 隐藏状态时翻转尖头 */
@@ -592,7 +596,7 @@
               <span class="media-icon">${tweet.mediaType || ''}</span>
             </div>
             <div class="tweet-content">${tweet.text || '(纯图片/视频推文)'}</div>
-            ${tweet.translation ? `<div class="tweet-translation">🇨🇳 ${tweet.translation}</div>` : ''}
+            ${tweet.translation ? `<div class="tweet-translation">译：${tweet.translation}</div>` : ''}
             <a href="${tweet.link}" target="_blank" class="tweet-link">查看原推 →</a>
           </div>
         `;
