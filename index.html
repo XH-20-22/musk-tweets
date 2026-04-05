@@ -53,43 +53,42 @@
       color: #aaa;
     }
     
-    /* 时间线显示/隐藏按钮 - 简化三角形 */
+    /* 时间线显示/隐藏按钮 - 简化尖头 */
     .timeline-toggle {
-      position: absolute;
+      position: fixed;
       left: 0;
       top: 50%;
       transform: translateY(-50%);
-      width: 20px;
-      height: 40px;
-      background: rgba(255, 255, 255, 0.8);
-      border: 1px solid #667eea;
-      border-left: none;
+      width: 24px;
+      height: 60px;
+      background: #667eea;
       border-radius: 0 8px 8px 0;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      z-index: 10;
+      z-index: 1001;
       transition: all 0.3s;
     }
     
-    body.night-mode .timeline-toggle {
-      background: rgba(26, 26, 46, 0.8);
-    }
-    
     .timeline-toggle:hover {
-      width: 24px;
-      background: rgba(102, 126, 234, 0.15);
+      width: 28px;
+      background: #5568d3;
     }
     
-    .timeline-toggle svg {
-      width: 10px;
-      height: 10px;
-      fill: #667eea;
+    /* 尖头（始终显示） */
+    .timeline-toggle::after {
+      content: '';
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 6px 0 6px 8px;
+      border-color: transparent transparent transparent white;
       transition: transform 0.3s;
     }
     
-    .timeline.hidden .timeline-toggle svg {
+    /* 隐藏状态时翻转尖头 */
+    .timeline.hidden + .tweets-area .timeline-toggle::after {
       transform: rotate(180deg);
     }
     
@@ -198,6 +197,17 @@
       background: rgba(102, 126, 234, 0.05);
     }
     
+    /* 无推文的月份 - 灰色淡化 */
+    .month-item.no-tweets {
+      color: #ccc;
+      opacity: 0.4;
+      background: transparent;
+    }
+    
+    body.night-mode .month-item.no-tweets {
+      color: #555;
+    }
+    
     /* 月份短线标记 */
     .month-item::before {
       content: '';
@@ -210,12 +220,17 @@
       background: #667eea;
     }
     
-    /* 激活状态 - 放大2倍，高亮提升50% */
+    .month-item.no-tweets::before {
+      background: #ccc;
+      opacity: 0.3;
+    }
+    
+    /* 激活状态 - 放大不超过年份字号的一半 */
     .month-item.active {
-      font-size: 1.7rem;
+      font-size: 0.7rem;
       background: rgba(102, 126, 234, 0.3);
       font-weight: bold;
-      padding: 8px 0 8px 12px;
+      padding: 6px 0 6px 12px;
     }
     
     .month-item.active::before {
@@ -230,7 +245,7 @@
     }
     
     .month-item.active .month-count {
-      font-size: 1.5rem;
+      font-size: 0.7rem;
     }
     
     body.night-mode .month-count {
@@ -398,17 +413,13 @@
     <div class="subtitle">2022年至今</div>
   </div>
 
+  <!-- 时间线显示/隐藏按钮（始终显示） -->
+  <div class="timeline-toggle" onclick="toggleTimeline()" title="显示/隐藏时间线"></div>
+
   <!-- 主内容区 -->
   <div class="main-content">
     <!-- 左侧时间线 -->
     <div class="timeline" id="timeline">
-      <!-- 简化三角形按钮 -->
-      <div class="timeline-toggle" onclick="toggleTimeline()" title="显示/隐藏时间线">
-        <svg viewBox="0 0 10 10">
-          <polygon points="2,0 2,10 8,5" />
-        </svg>
-      </div>
-      
       <div class="timeline-title">📅 时间线</div>
       <div id="timelineContainer"></div>
     </div>
@@ -545,11 +556,11 @@
           const hasMonthTweets = tweets.length > 0;
           const monthNames = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
           
-          if (!hasMonthTweets) return '';
-          
+          // 显示所有月份，有推文的显示数量，无推文的只显示月份名（灰色）
           return `
-            <div class="month-item" data-year="${year}" data-month="${month}">
-              ${monthNames[month-1]} <span class="month-count">${tweets.length}</span>
+            <div class="month-item ${hasMonthTweets ? 'has-tweets' : 'no-tweets'}" 
+                 data-year="${year}" data-month="${month}">
+              ${monthNames[month-1]}${hasMonthTweets ? ` <span class="month-count">${tweets.length}</span>` : ''}
             </div>
           `;
         }).join('');
