@@ -24,6 +24,27 @@
       background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
     }
     
+    body.night-mode .timeline {
+      background: rgba(26, 26, 46, 0.95);
+      border-right-color: #333;
+    }
+    
+    body.night-mode .timeline-item {
+      border-left-color: #555;
+    }
+    
+    body.night-mode .timeline-item.active {
+      border-left-color: #667eea;
+    }
+    
+    body.night-mode .timeline-date {
+      color: #aaa;
+    }
+    
+    body.night-mode .timeline-item.active .timeline-date {
+      color: #667eea;
+    }
+    
     body.night-mode .tweet-card {
       background: #1a1a2e;
       color: #eee;
@@ -115,23 +136,117 @@
       display: none;
     }
     
-    /* 内容区域 */
+    /* 内容区域 - 主布局 */
     .content {
       display: none;
       width: 100%;
-      max-width: 800px;
+      max-width: 1400px;
+      height: 90vh;
     }
     .content.unlocked {
-      display: block;
+      display: flex;
+      gap: 20px;
     }
     body.unlocked {
-      display: block;
+      align-items: flex-start;
+      padding-top: 40px;
     }
     
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
+    /* 左侧时间线 */
+    .timeline {
+      width: 250px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 20px;
+      height: 90vh;
+      overflow-y: auto;
+      position: sticky;
+      top: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-right: 3px solid #667eea;
     }
+    
+    .timeline-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #667eea;
+      margin-bottom: 20px;
+      text-align: center;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #667eea;
+    }
+    
+    .timeline-item {
+      padding: 12px;
+      margin-bottom: 10px;
+      border-left: 3px solid #ddd;
+      padding-left: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border-radius: 4px;
+    }
+    
+    .timeline-item:hover {
+      background: rgba(102, 126, 234, 0.1);
+      border-left-color: #667eea;
+    }
+    
+    .timeline-item.active {
+      background: rgba(102, 126, 234, 0.15);
+      border-left-color: #667eea;
+      font-weight: bold;
+    }
+    
+    .timeline-date {
+      font-size: 0.9rem;
+      color: #666;
+      display: block;
+      margin-bottom: 5px;
+    }
+    
+    .timeline-item.active .timeline-date {
+      color: #667eea;
+    }
+    
+    .timeline-preview {
+      font-size: 0.85rem;
+      color: #999;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    
+    /* 右侧推文区域 */
+    .tweets-area {
+      flex: 1;
+      overflow-y: auto;
+      height: 90vh;
+      padding-right: 10px;
+    }
+    
+    /* 滚动条样式 */
+    .timeline::-webkit-scrollbar,
+    .tweets-area::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .timeline::-webkit-scrollbar-track,
+    .tweets-area::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+    
+    .timeline::-webkit-scrollbar-thumb,
+    .tweets-area::-webkit-scrollbar-thumb {
+      background: rgba(102, 126, 234, 0.5);
+      border-radius: 10px;
+    }
+    
+    .timeline::-webkit-scrollbar-thumb:hover,
+    .tweets-area::-webkit-scrollbar-thumb:hover {
+      background: rgba(102, 126, 234, 0.8);
+    }
+    
     h1 {
       color: white;
       text-align: center;
@@ -139,6 +254,7 @@
       font-size: 2.5rem;
       text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
     }
+    
     .tweet-card {
       background: white;
       border-radius: 12px;
@@ -146,36 +262,44 @@
       margin-bottom: 20px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
       transition: transform 0.2s, box-shadow 0.2s;
+      scroll-margin-top: 20px;
     }
+    
     .tweet-card:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 12px rgba(0,0,0,0.15);
     }
+    
     .tweet-header {
       display: flex;
       align-items: center;
       margin-bottom: 12px;
       gap: 10px;
     }
+    
     .tweet-author {
       font-weight: bold;
       color: #1da1f2;
       font-size: 1.1rem;
     }
+    
     .tweet-time {
       color: #666;
       font-size: 0.9rem;
     }
+    
     .media-icon {
       font-size: 1.2rem;
       margin-left: auto;
     }
+    
     .tweet-content {
       color: #333;
       line-height: 1.6;
       margin-bottom: 8px;
       white-space: pre-wrap;
     }
+    
     .tweet-translation {
       color: #666;
       line-height: 1.6;
@@ -184,9 +308,11 @@
       padding-top: 8px;
       border-top: 1px dashed #e0e0e0;
     }
+    
     .tweet-footer {
       text-align: right;
     }
+    
     .tweet-link {
       color: #1da1f2;
       text-decoration: none;
@@ -197,15 +323,35 @@
       display: inline-block;
       transition: all 0.2s;
     }
+    
     .tweet-link:hover {
       background: #1da1f2;
       color: white;
     }
+    
     .update-time {
       text-align: center;
       color: rgba(255,255,255,0.8);
       margin-top: 20px;
       font-size: 0.9rem;
+      padding: 20px;
+    }
+    
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      .content.unlocked {
+        flex-direction: column;
+      }
+      .timeline {
+        width: 100%;
+        height: auto;
+        max-height: 200px;
+        position: relative;
+        margin-bottom: 20px;
+      }
+      .tweets-area {
+        height: auto;
+      }
     }
   </style>
 </head>
@@ -221,10 +367,64 @@
 
   <!-- 内容区域 -->
   <div class="content" id="contentArea">
-    <div class="container">
+    <!-- 左侧时间线 -->
+    <div class="timeline">
+      <div class="timeline-title">📅 时间线</div>
+      <div class="timeline-item active" onclick="scrollToTweet(0)">
+        <span class="timeline-date">2022-04-28 08:56</span>
+        <div class="timeline-preview">Next I'm buying Coca-Cola...</div>
+      </div>
+      <div class="timeline-item" onclick="scrollToTweet(1)">
+        <span class="timeline-date">2022-04-26 00:12</span>
+        <div class="timeline-preview">I hope that even my worst critics...</div>
+      </div>
+      <div class="timeline-item" onclick="scrollToTweet(2)">
+        <span class="timeline-date">2024-11-06 13:01</span>
+        <div class="timeline-preview">The future is gonna be so 🔥</div>
+      </div>
+      <div class="timeline-item" onclick="scrollToTweet(3)">
+        <span class="timeline-date">2022-04-28 09:53</span>
+        <div class="timeline-preview">Let's make Twitter maximum fun!</div>
+      </div>
+      <div class="timeline-item" onclick="scrollToTweet(4)">
+        <span class="timeline-date">2022-04-26 03:43</span>
+        <div class="timeline-preview">🎉 Yesss!!! 🚀</div>
+      </div>
+      <div class="timeline-item" onclick="scrollToTweet(5)">
+        <span class="timeline-date">2022-04-28 09:57</span>
+        <div class="timeline-preview">Listen, I can't do miracles ok</div>
+      </div>
+      <div class="timeline-item" onclick="scrollToTweet(6)">
+        <span class="timeline-date">2024-11-07 00:39</span>
+        <div class="timeline-preview">It is morning in America again</div>
+      </div>
+      <div class="timeline-item" onclick="scrollToTweet(7)">
+        <span class="timeline-date">2022-10-28 11:49</span>
+        <div class="timeline-preview">the bird is freed</div>
+      </div>
+      <div class="timeline-item" onclick="scrollToTweet(8)">
+        <span class="timeline-date">2024-07-14 06:45</span>
+        <div class="timeline-preview">I fully endorse President Trump...</div>
+      </div>
+      <div class="timeline-item" onclick="scrollToTweet(9)">
+        <span class="timeline-date">2024-11-06 13:35</span>
+        <div class="timeline-preview">Let that sink in</div>
+      </div>
+      <div class="timeline-item" onclick="scrollToTweet(10)">
+        <span class="timeline-date">2022-10-29 05:16</span>
+        <div class="timeline-preview">Comedy is now legal on Twitter</div>
+      </div>
+      <div class="timeline-item" onclick="scrollToTweet(11)">
+        <span class="timeline-date">2024-08-14 23:24</span>
+        <div class="timeline-preview">Haters will say this is AI 🤖</div>
+      </div>
+    </div>
+
+    <!-- 右侧推文区域 -->
+    <div class="tweets-area">
       <h1>🚀 Elon Musk 推文合集</h1>
       
-      <div class="tweet-card">
+      <div class="tweet-card" id="tweet-0">
         <div class="tweet-header">
           <span class="tweet-author">Elon Musk</span>
           <span class="tweet-time">4月28日 08:56</span>
@@ -237,7 +437,7 @@
         </div>
       </div>
 
-      <div class="tweet-card">
+      <div class="tweet-card" id="tweet-1">
         <div class="tweet-header">
           <span class="tweet-author">Elon Musk</span>
           <span class="tweet-time">4月26日 00:12</span>
@@ -250,7 +450,7 @@
         </div>
       </div>
 
-      <div class="tweet-card">
+      <div class="tweet-card" id="tweet-2">
         <div class="tweet-header">
           <span class="tweet-author">Elon Musk</span>
           <span class="tweet-time">11月6日 13:01</span>
@@ -263,7 +463,7 @@
         </div>
       </div>
 
-      <div class="tweet-card">
+      <div class="tweet-card" id="tweet-3">
         <div class="tweet-header">
           <span class="tweet-author">Elon Musk</span>
           <span class="tweet-time">4月28日 09:53</span>
@@ -276,7 +476,7 @@
         </div>
       </div>
 
-      <div class="tweet-card">
+      <div class="tweet-card" id="tweet-4">
         <div class="tweet-header">
           <span class="tweet-author">Elon Musk</span>
           <span class="tweet-time">4月26日 03:43</span>
@@ -289,7 +489,7 @@
         </div>
       </div>
 
-      <div class="tweet-card">
+      <div class="tweet-card" id="tweet-5">
         <div class="tweet-header">
           <span class="tweet-author">Elon Musk</span>
           <span class="tweet-time">4月28日 09:57</span>
@@ -302,7 +502,7 @@
         </div>
       </div>
 
-      <div class="tweet-card">
+      <div class="tweet-card" id="tweet-6">
         <div class="tweet-header">
           <span class="tweet-author">Elon Musk</span>
           <span class="tweet-time">11月7日 00:39</span>
@@ -315,7 +515,7 @@
         </div>
       </div>
 
-      <div class="tweet-card">
+      <div class="tweet-card" id="tweet-7">
         <div class="tweet-header">
           <span class="tweet-author">Elon Musk</span>
           <span class="tweet-time">10月28日 11:49</span>
@@ -328,7 +528,7 @@
         </div>
       </div>
 
-      <div class="tweet-card">
+      <div class="tweet-card" id="tweet-8">
         <div class="tweet-header">
           <span class="tweet-author">Elon Musk</span>
           <span class="tweet-time">7月14日 06:45</span>
@@ -341,7 +541,7 @@
         </div>
       </div>
 
-      <div class="tweet-card">
+      <div class="tweet-card" id="tweet-9">
         <div class="tweet-header">
           <span class="tweet-author">Elon Musk</span>
           <span class="tweet-time">11月6日 13:35</span>
@@ -354,7 +554,7 @@
         </div>
       </div>
 
-      <div class="tweet-card">
+      <div class="tweet-card" id="tweet-10">
         <div class="tweet-header">
           <span class="tweet-author">Elon Musk</span>
           <span class="tweet-time">10月29日 05:16</span>
@@ -367,7 +567,7 @@
         </div>
       </div>
 
-      <div class="tweet-card">
+      <div class="tweet-card" id="tweet-11">
         <div class="tweet-header">
           <span class="tweet-author">Elon Musk</span>
           <span class="tweet-time">8月14日 23:24</span>
@@ -381,7 +581,7 @@
       </div>
 
       <div class="update-time">
-        最后更新: 2026/4/5 20:06 | 含中英双语翻译 | ☀️🌙 自动切换主题
+        最后更新: 2026/4/5 20:35 | 含中英双语翻译 | ☀️🌙 自动切换主题 | 📅 时间线导航
       </div>
     </div>
   </div>
@@ -390,35 +590,26 @@
     // 根据北京时间自动切换白天/黑夜模式
     function updateTheme() {
       const now = new Date();
-      // 转换为北京时间 (UTC+8)
       const beijingTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Shanghai' }));
       const hour = beijingTime.getHours();
       
-      // 6:00-18:00 白天模式，其他时间夜间模式
       if (hour >= 6 && hour < 18) {
         document.body.classList.remove('night-mode');
-        console.log('☀️ 白天模式');
       } else {
         document.body.classList.add('night-mode');
-        console.log('🌙 夜间模式');
       }
     }
     
-    // 页面加载时设置主题
     updateTheme();
-    
-    // 每分钟检查一次（以防跨越时间界限）
     setInterval(updateTheme, 60000);
     
-    // 密码验证 - SHA256 哈希后的密码: "musk2026"
+    // 密码验证
     const correctPasswordHash = "f930e80174d069bfa09469f79568458e3311978264039f6abcb66ffd0c91c46d";
     
-    // 检查 sessionStorage 是否已解锁
     if (sessionStorage.getItem('unlocked') === 'true') {
       unlockContent();
     }
     
-    // 回车键提交
     document.getElementById('passwordInput').addEventListener('keypress', function(e) {
       if (e.key === 'Enter') {
         checkPassword();
@@ -447,13 +638,60 @@
       document.body.classList.add('unlocked');
     }
     
-    // SHA-256 哈希函数
     async function sha256(message) {
       const msgBuffer = new TextEncoder().encode(message);
       const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
+    
+    // 时间线导航功能
+    function scrollToTweet(index) {
+      const tweet = document.getElementById('tweet-' + index);
+      if (tweet) {
+        tweet.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // 更新时间线高亮
+        document.querySelectorAll('.timeline-item').forEach((item, i) => {
+          if (i === index) {
+            item.classList.add('active');
+          } else {
+            item.classList.remove('active');
+          }
+        });
+        
+        // 临时高亮推文卡片
+        tweet.style.boxShadow = '0 0 20px rgba(102, 126, 234, 0.5)';
+        setTimeout(() => {
+          tweet.style.boxShadow = '';
+        }, 1000);
+      }
+    }
+    
+    // 监听滚动，自动更新时间线高亮
+    let scrollTimeout;
+    document.querySelector('.tweets-area').addEventListener('scroll', function() {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const cards = document.querySelectorAll('.tweet-card');
+        const scrollPosition = this.scrollTop + this.clientHeight / 2;
+        
+        cards.forEach((card, index) => {
+          const cardTop = card.offsetTop;
+          const cardBottom = cardTop + card.clientHeight;
+          
+          if (scrollPosition >= cardTop && scrollPosition <= cardBottom) {
+            document.querySelectorAll('.timeline-item').forEach((item, i) => {
+              if (i === index) {
+                item.classList.add('active');
+              } else {
+                item.classList.remove('active');
+              }
+            });
+          }
+        });
+      }, 100);
+    });
   </script>
 </body>
 </html>
