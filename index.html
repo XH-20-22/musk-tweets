@@ -364,6 +364,16 @@
       font-size: 16px;
     }
     
+    .username-badge {
+      color: #666;
+      font-weight: normal;
+      font-size: 0.9rem;
+    }
+    
+    body.night-mode .username-badge {
+      color: #888;
+    }
+    
     .tweet-content {
       color: #333;
       line-height: 1.6;
@@ -859,6 +869,7 @@
                 Elon Musk
                 <span class="verified-badge"></span>
                 <span class="platform-badge">𝕏</span>
+                <span class="username-badge">@elonmusk</span>
               </span>
             </div>
             <div class="tweet-content">${tweet.text || '(纯图片/视频推文)'}</div>
