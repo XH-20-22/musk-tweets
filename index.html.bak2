@@ -364,16 +364,6 @@
       font-size: 16px;
     }
     
-    .username-badge {
-      color: #666;
-      font-weight: normal;
-      font-size: 0.9rem;
-    }
-    
-    body.night-mode .username-badge {
-      color: #888;
-    }
-    
     .tweet-content {
       color: #333;
       line-height: 1.6;
@@ -486,40 +476,23 @@
       color: #888;
     }
     
-    
-    
     .tweet-actions-inline {
       display: flex;
-      gap: 8px;
+      gap: 15px;
       align-items: center;
     }
     
     .action-icon {
-      width: 34px;
-      height: 34px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      font-size: 1rem;
+      font-size: 1.2rem;
       cursor: pointer;
-      transition: background-color 0.2s;
+      transition: transform 0.2s, opacity 0.2s;
+      opacity: 0.6;
       text-decoration: none;
-      color: #536471;
-    }
-    
-    body.night-mode .action-icon {
-      color: #71767b;
     }
     
     .action-icon:hover {
-      background-color: rgba(29, 155, 240, 0.1);
-      color: #1d9bf0;
-    }
-    
-    body.night-mode .action-icon:hover {
-      background-color: rgba(29, 155, 240, 0.1);
-      color: #1d9bf0;
+      transform: scale(1.2);
+      opacity: 1;
     }
     
     
@@ -900,16 +873,8 @@
                 <span>${stats.bookmarks} Bookmarks</span>
               </div>
               <div class="tweet-actions-inline">
-                <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(tweet.link)}" target="_blank" class="action-icon" title="分享推文">
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                    <path d="M12 2.59l5.7 5.7-1.41 1.42L13 6.41V16h-2V6.41l-3.3 3.3-1.41-1.42L12 2.59zM21 15l-.02 3.51c0 1.38-1.12 2.49-2.5 2.49H5.5C4.11 21 3 19.88 3 18.5V15h2v3.5c0 .28.22.5.5.5h12.98c.28 0 .5-.22.5-.5L19 15h2z"></path>
-                  </svg>
-                </a>
-                <a href="${tweet.link}" target="_blank" class="action-icon" title="查看原文">
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                    <path d="M8.75 21V3h2v18h-2zM18 21V8.5h2V21h-2zM4 21l.004-10h2L6 21H4zm9.248 0v-7h2v7h-2z"></path>
-                  </svg>
-                </a>
+                <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(tweet.link)}" target="_blank" class="action-icon" title="分享推文">📤</a>
+                <a href="${tweet.link}" target="_blank" class="action-icon" title="查看原文">🔗</a>
               </div>
             </div>
             <div class="tweet-footer">

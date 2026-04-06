@@ -268,6 +268,7 @@
     }
     
     .tweet-card {
+      position: relative;
       background: white;
       border-radius: 12px;
       padding: 20px;
@@ -286,6 +287,27 @@
       transform: translateY(-2px);
       box-shadow: 0 8px 12px rgba(0,0,0,0.15);
     }
+    
+    /* 未读指示器 - 右上角圆点 */
+    .tweet-card::after {
+      content: '';
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #1DA1F2;
+      box-shadow: 0 0 8px rgba(29, 161, 242, 0.5);
+      transition: background-color 0.3s;
+    }
+    /* 已读推文 - 只改变右上角圆点颜色 */
+    .tweet-card.viewed::after {
+      background-color: #999;
+      box-shadow: none;
+    }
+    
+    
     
     .tweet-header {
       display: flex;
@@ -347,20 +369,31 @@
       line-height: 1.6;
       margin-bottom: 8px;
       white-space: pre-wrap;
-      font-size: 1.05rem;
+      font-size: 1.155rem;
     }
     
     body.night-mode .tweet-content {
       color: #eee;
     }
     
+    
+    .content-divider {
+      border: none;
+      border-top: 1px solid #e0e0e0;
+      margin: 12px 0;
+    }
+    
+    body.night-mode .content-divider {
+      border-color: #333;
+    }
+    
     .tweet-translation {
       color: #666;
       line-height: 1.6;
       margin-bottom: 8px;
-      font-size: 0.95rem;
+      font-size: 1.045rem;
       padding-top: 8px;
-      border-top: 1px dashed #e0e0e0;
+      
     }
     
     body.night-mode .tweet-translation {
@@ -370,6 +403,7 @@
     
     /* 详细时间戳 */
     .tweet-timestamp {
+      display: none;
       color: #999;
       font-size: 0.8rem;
       margin-bottom: 12px;
@@ -380,26 +414,88 @@
     }
     
     /* 统计+操作栏（合并） */
-    .tweet-footer {
-      display: flex;
-      gap: 15px;
-      padding: 12px 0;
+    
+    
+    /* 时间行 */
+    .tweet-time-row {
+      padding: 10px 0;
       border-top: 1px solid #e0e0e0;
-      align-items: center;
-      flex-wrap: wrap;
+      font-size: 0.85rem;
+      color: #666;
     }
     
-    body.night-mode .tweet-footer {
+    body.night-mode .tweet-time-row {
       border-color: #333;
+      color: #888;
     }
     
-    .stat-item {
+    /* 统计数据行 */
+    
+    
+    .tweet-stats-row {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 20px;
+      padding: 10px 0;
+      border-top: 1px solid #e0e0e0;
+      font-size: 0.85rem;
       color: #666;
+    }
+    
+    body.night-mode .tweet-stats-row {
+      border-color: #333;
+      color: #888;
+    }
+    
+    .tweet-stats-row .stats-group {
+      display: flex;
+      gap: 20px;
+      flex: 1;
+    }
+    
+    .tweet-stats-row span {
+      font-weight: normal;
+      color: #666;
+      background: none;
+      padding: 0;
+      border-radius: 0;
       font-size: 0.85rem;
     }
+    
+    body.night-mode .tweet-stats-row span {
+      color: #888;
+      background: none;
+    }
+    
+    .tweet-stats-row .likes-count {
+      color: #666;
+      background: none;
+    }
+    
+    body.night-mode .tweet-stats-row .likes-count {
+      color: #888;
+    }
+    
+    .tweet-actions-inline {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+    
+    .action-icon {
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: transform 0.2s, opacity 0.2s;
+      opacity: 0.6;
+      text-decoration: none;
+    }
+    
+    .action-icon:hover {
+      transform: scale(1.2);
+      opacity: 1;
+    }
+    
+    
     
     body.night-mode .stat-item {
       color: #888;
@@ -413,6 +509,10 @@
     .stat-count {
       font-weight: 500;
       color: #333;
+    }
+    
+    .stat-item {
+      display: none;
     }
     
     body.night-mode .stat-count {
@@ -434,15 +534,15 @@
       transform-origin: left center;
     }
     
+    
+    
     .tweet-link:hover,
     .tweet-share:hover {
       background: rgba(102, 126, 234, 0.15);
     }
     
     /* 已浏览状态 */
-    .tweet-card.viewed {
-      opacity: 0.5;
-    }
+    
     
     .tweet-card.viewed .tweet-content,
     .tweet-card.viewed .tweet-translation {
@@ -747,8 +847,9 @@
         const isViewed = viewedTweets.has(tweetId);
         
         // 详细时间戳
-        const weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
-        const detailedTime = `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日 ${weekdays[date.getDay()]} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        const detailedTime = `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()} · ${weekdays[date.getDay()]} · ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
         
         return `
           <div class="tweet-card ${isViewed ? 'viewed' : ''}" id="tweet-${index}" data-time="${tweet.time}" data-tweet-id="${tweetId}">
@@ -761,8 +862,20 @@
               </span>
             </div>
             <div class="tweet-content">${tweet.text || '(纯图片/视频推文)'}</div>
-            ${tweet.translation ? `<div class="tweet-translation">译：${tweet.translation}</div>` : ''}
-            <div class="tweet-timestamp">${detailedTime}</div>
+            ${tweet.translation ? `<hr class="content-divider"><div class="tweet-translation">译：${tweet.translation}</div>` : ''}
+            <div class="tweet-time-row">${detailedTime}</div>
+            <div class="tweet-stats-row">
+              <div class="stats-group">
+                <span>${stats.views} Views</span>
+                <span>${stats.retweets} Retweets</span>
+                <span class="likes-count">${stats.likes} Likes</span>
+                <span>${stats.bookmarks} Bookmarks</span>
+              </div>
+              <div class="tweet-actions-inline">
+                <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(tweet.link)}" target="_blank" class="action-icon" title="分享推文">📤</a>
+                <a href="${tweet.link}" target="_blank" class="action-icon" title="查看原文">🔗</a>
+              </div>
+            </div>
             <div class="tweet-footer">
               <div class="stat-item">
                 <span class="stat-label">阅读</span>
@@ -780,7 +893,7 @@
                 <span class="stat-label">收藏</span>
                 <span class="stat-count">${stats.bookmarks}</span>
               </div>
-              <a href="${tweet.link}" target="_blank" class="tweet-link">查看原推</a>
+              <a href="${tweet.link}" target="_blank" class="tweet-link">查看原文</a>
               <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(tweet.link)}" target="_blank" class="tweet-share">分享推文</a>
             </div>
           </div>
