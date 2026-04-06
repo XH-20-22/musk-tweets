@@ -1,0 +1,144 @@
+# UI 修改补丁 - 精确修改点
+
+## 1. CSS 修改
+
+### 在 .tweet-card 样式后添加未读指示器
+.tweet-card {
+  position: relative;  /* 添加这行，如果没有的话 */
+}
+
+.tweet-card::after {
+  content: '';
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #1DA1F2;
+  box-shadow: 0 0 8px rgba(29, 161, 242, 0.5);
+  transition: background-color 0.3s;
+}
+
+.tweet-card.viewed::after {
+  background-color: #999;
+  box-shadow: none;
+}
+
+### 在 .tweet-translation 前添加分割线样式
+.content-divider {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 12px 0;
+}
+
+body.night-mode .content-divider {
+  border-color: #333;
+}
+
+### 修改 .tweet-footer 相关样式
+/* 移除原 .tweet-timestamp 的位置，改为行内显示 */
+.tweet-timestamp {
+  display: none;  /* 或删除这个样式定义 */
+}
+
+/* 新增元数据行 */
+.tweet-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-top: 1px solid #e0e0e0;
+  font-size: 0.85rem;
+  color: #666;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+body.night-mode .tweet-meta-row {
+  border-color: #333;
+  color: #888;
+}
+
+.tweet-timestamp-inline {
+  font-size: 0.85rem;
+}
+
+.tweet-stats-inline {
+  display: flex;
+  gap: 15px;
+}
+
+.tweet-stats-inline span {
+  font-weight: normal;
+}
+
+/* 修改 .tweet-footer - 只保留操作按钮 */
+.tweet-footer {
+  display: flex;
+  gap: 15px;
+  padding: 10px 0 0 0;
+  border-top: none !important;  /* 移除顶部边框 */
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* 链接字体改为常规 */
+.tweet-link, .tweet-share {
+  font-weight: normal !important;
+}
+
+/* 隐藏原来的 stat-item */
+.stat-item {
+  display: none;
+}
+
+## 2. HTML 模板修改 (JavaScript 中)
+
+### 修改生成推文卡片的代码 (约第750-785行)
+
+原代码：
+```javascript
+<div class="tweet-content">${tweet.text || '(纯图片/视频推文)'}</div>
+${tweet.translation ? `<div class="tweet-translation">译：${tweet.translation}</div>` : ''}
+<div class="tweet-timestamp">${detailedTime}</div>
+<div class="tweet-footer">
+  <div class="stat-item">
+    <span class="stat-label">阅读</span>
+    <span class="stat-count">${stats.views}</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-label">转发</span>
+    <span class="stat-count">${stats.retweets}</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-label">点赞</span>
+    <span class="stat-count">${stats.likes}</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-label">收藏</span>
+    <span class="stat-count">${stats.bookmarks}</span>
+  </div>
+  <a href="${tweet.link}" target="_blank" class="tweet-link">查看原推</a>
+  <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(tweet.link)}" target="_blank" class="tweet-share">分享推文</a>
+</div>
+```
+
+改为：
+```javascript
+<div class="tweet-content">${tweet.text || '(纯图片/视频推文)'}</div>
+${tweet.translation ? `<hr class="content-divider"><div class="tweet-translation">译：${tweet.translation}</div>` : ''}
+<div class="tweet-meta-row">
+  <div class="tweet-timestamp-inline">${detailedTime}</div>
+  <div class="tweet-stats-inline">
+    <span>${stats.views} Views</span>
+    <span>${stats.retweets} Retweets</span>
+    <span>${stats.likes} Likes</span>
+  </div>
+</div>
+<div class="tweet-footer">
+  <a href="${tweet.link}" target="_blank" class="tweet-link">View Original Tweet</a>
+  <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(tweet.link)}" target="_blank" class="tweet-share">Share Tweet</a>
+</div>
+```
+
