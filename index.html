@@ -268,6 +268,7 @@
     }
     
     .tweet-card {
+      position: relative;
       background: white;
       border-radius: 12px;
       padding: 20px;
@@ -285,6 +286,25 @@
     .tweet-card:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+    }
+    
+    /* 未读指示器 - 右上角圆点 */
+    .tweet-card::after {
+      content: '';
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #1DA1F2;
+      box-shadow: 0 0 8px rgba(29, 161, 242, 0.5);
+      transition: background-color 0.3s;
+    }
+    
+    .tweet-card.viewed::after {
+      background-color: #999;
+      box-shadow: none;
     }
     
     .tweet-header {
@@ -354,13 +374,24 @@
       color: #eee;
     }
     
+    
+    .content-divider {
+      border: none;
+      border-top: 1px solid #e0e0e0;
+      margin: 12px 0;
+    }
+    
+    body.night-mode .content-divider {
+      border-color: #333;
+    }
+    
     .tweet-translation {
       color: #666;
       line-height: 1.6;
       margin-bottom: 8px;
       font-size: 0.95rem;
       padding-top: 8px;
-      border-top: 1px dashed #e0e0e0;
+      
     }
     
     body.night-mode .tweet-translation {
@@ -370,6 +401,7 @@
     
     /* 详细时间戳 */
     .tweet-timestamp {
+      display: none;
       color: #999;
       font-size: 0.8rem;
       margin-bottom: 12px;
@@ -380,11 +412,45 @@
     }
     
     /* 统计+操作栏（合并） */
+    
+    
+    /* 时间行 */
+    .tweet-time-row {
+      padding: 10px 0;
+      border-top: 1px solid #e0e0e0;
+      font-size: 0.85rem;
+      color: #666;
+    }
+    
+    body.night-mode .tweet-time-row {
+      border-color: #333;
+      color: #888;
+    }
+    
+    /* 统计数据行 */
+    .tweet-stats-row {
+      display: flex;
+      gap: 15px;
+      padding: 10px 0;
+      border-top: 1px solid #e0e0e0;
+      font-size: 0.85rem;
+      color: #666;
+    }
+    
+    body.night-mode .tweet-stats-row {
+      border-color: #333;
+      color: #888;
+    }
+    
+    .tweet-stats-row span {
+      font-weight: normal;
+    }
+    
     .tweet-footer {
       display: flex;
       gap: 15px;
-      padding: 12px 0;
-      border-top: 1px solid #e0e0e0;
+      padding: 10px 0 0 0;
+      border-top: none;
       align-items: center;
       flex-wrap: wrap;
     }
@@ -415,6 +481,10 @@
       color: #333;
     }
     
+    .stat-item {
+      display: none;
+    }
+    
     body.night-mode .stat-count {
       color: #ccc;
     }
@@ -432,6 +502,10 @@
       transition: all 0.2s;
       transform: scale(1.5);
       transform-origin: left center;
+    }
+    
+    .tweet-link, .tweet-share {
+      font-weight: normal !important;
     }
     
     .tweet-link:hover,
@@ -761,8 +835,14 @@
               </span>
             </div>
             <div class="tweet-content">${tweet.text || '(纯图片/视频推文)'}</div>
-            ${tweet.translation ? `<div class="tweet-translation">译：${tweet.translation}</div>` : ''}
-            <div class="tweet-timestamp">${detailedTime}</div>
+            ${tweet.translation ? `<hr class="content-divider"><div class="tweet-translation">译：${tweet.translation}</div>` : ''}
+            <div class="tweet-time-row">${detailedTime}</div>
+            <div class="tweet-stats-row">
+              <span>${stats.views} Views</span>
+              <span>${stats.retweets} Retweets</span>
+              <span>${stats.likes} Likes</span>
+              <span>${stats.bookmarks} Bookmarks</span>
+            </div>
             <div class="tweet-footer">
               <div class="stat-item">
                 <span class="stat-label">阅读</span>
@@ -780,8 +860,8 @@
                 <span class="stat-label">收藏</span>
                 <span class="stat-count">${stats.bookmarks}</span>
               </div>
-              <a href="${tweet.link}" target="_blank" class="tweet-link">查看原推</a>
-              <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(tweet.link)}" target="_blank" class="tweet-share">分享推文</a>
+              <a href="${tweet.link}" target="_blank" class="tweet-link">View Original Tweet</a>
+              <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(tweet.link)}" target="_blank" class="tweet-share">Share Tweet</a>
             </div>
           </div>
         `;
