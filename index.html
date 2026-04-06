@@ -430,9 +430,12 @@
     }
     
     /* 统计数据行 */
+    
+    
     .tweet-stats-row {
       display: flex;
-      gap: 15px;
+      align-items: center;
+      gap: 20px;
       padding: 10px 0;
       border-top: 1px solid #e0e0e0;
       font-size: 0.85rem;
@@ -444,93 +447,55 @@
       color: #888;
     }
     
-    
+    .tweet-stats-row .stats-group {
+      display: flex;
+      gap: 20px;
+      flex: 1;
+    }
     
     .tweet-stats-row span {
-      font-weight: 500;
-      color: white;
-      background: #666;
-      padding: 4px 10px;
-      border-radius: 12px;
-      font-size: 0.8rem;
-    }
-    
-    body.night-mode .tweet-stats-row span {
-      background: #444;
-    }
-    
-    .tweet-stats-row .likes-count {
-      color: white;
-      background: #e91e63;
-    }
-    
-    .tweet-footer {
-      display: flex;
-      gap: 15px;
-      padding: 10px 0 0 0;
-      border-top: none;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    
-    body.night-mode .tweet-footer {
-      border-color: #333;
-    }
-    
-    .stat-item {
-      display: flex;
-      align-items: center;
-      gap: 4px;
+      font-weight: normal;
       color: #666;
+      background: none;
+      padding: 0;
+      border-radius: 0;
       font-size: 0.85rem;
     }
     
-    .tweet-footer {
-      display: flex;
-      gap: 10px;
-      padding: 10px 0 0 0;
-      border-top: none;
-      align-items: stretch;
+    body.night-mode .tweet-stats-row span {
+      color: #888;
+      background: none;
     }
     
-    .tweet-link, .tweet-share {
-      flex: 1;
-      text-align: center;
-      padding: 10px;
-      background: #f0f0f0;
-      border-radius: 8px;
-      text-decoration: none;
-      color: #333;
-      font-weight: normal;
+    .tweet-stats-row .likes-count {
+      color: #666;
+      background: none;
+    }
+    
+    body.night-mode .tweet-stats-row .likes-count {
+      color: #888;
+    }
+    
+    .tweet-actions-inline {
       display: flex;
+      gap: 15px;
       align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.2s;
     }
     
-    body.night-mode .tweet-link,
-    body.night-mode .tweet-share {
-      background: #2a2a3e;
-      color: #eee;
+    .action-icon {
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: transform 0.2s, opacity 0.2s;
+      opacity: 0.6;
+      text-decoration: none;
     }
     
-    .tweet-link:hover,
-    .tweet-share:hover {
-      background: #667eea;
-      color: white;
-      transform: translateY(-1px);
+    .action-icon:hover {
+      transform: scale(1.2);
+      opacity: 1;
     }
     
-    .tweet-link::before {
-      content: '🔗';
-      font-size: 1.1rem;
-    }
     
-    .tweet-share::before {
-      content: '📤';
-      font-size: 1.1rem;
-    }
     
     body.night-mode .stat-item {
       color: #888;
@@ -900,10 +865,16 @@
             ${tweet.translation ? `<hr class="content-divider"><div class="tweet-translation">译：${tweet.translation}</div>` : ''}
             <div class="tweet-time-row">${detailedTime}</div>
             <div class="tweet-stats-row">
-              <span>${stats.views} Views</span>
-              <span>${stats.retweets} Retweets</span>
-              <span class="likes-count">${stats.likes} Likes</span>
-              <span>${stats.bookmarks} Bookmarks</span>
+              <div class="stats-group">
+                <span>${stats.views} Views</span>
+                <span>${stats.retweets} Retweets</span>
+                <span class="likes-count">${stats.likes} Likes</span>
+                <span>${stats.bookmarks} Bookmarks</span>
+              </div>
+              <div class="tweet-actions-inline">
+                <a href="https://twitter.com/intent/tweet?url=${encodeURIComponent(tweet.link)}" target="_blank" class="action-icon" title="分享推文">📤</a>
+                <a href="${tweet.link}" target="_blank" class="action-icon" title="查看原文">🔗</a>
+              </div>
             </div>
             <div class="tweet-footer">
               <div class="stat-item">
