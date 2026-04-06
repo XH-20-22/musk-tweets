@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BHGL - Twitter 推文提取工具</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 800px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    h1 {
+      color: #1da1f2;
+      font-size: 2rem;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+    }
+    
+    .step {
+      background: #f8f9fa;
+      border-left: 4px solid #667eea;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+    
+    .step-number {
+      display: inline-block;
+      background: #667eea;
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 30px;
+      margin-right: 10px;
+      font-weight: bold;
+    }
+    
+    .bookmarklet-box {
+      background: #f0f0f0;
+      border: 2px dashed #667eea;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+      text-align: center;
+    }
+    
+    .bookmarklet-link {
+      display: inline-block;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px 30px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.1rem;
+      transition: transform 0.2s;
+      cursor: move;
+    }
+    
+    .bookmarklet-link:hover {
+      transform: scale(1.05);
+    }
+    
+    .instruction {
+      background: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 5px;
+    }
+    
+    .code-box {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 15px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+      margin: 15px 0;
+    }
+    
+    button {
+      background: #1da1f2;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.2s;
+      margin: 10px 5px;
+    }
+    
+    button:hover {
+      background: #1a91da;
+    }
+    
+    .success {
+      background: #d4edda;
+      border-left: 4px solid #28a745;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px 0;
+      display: none;
+    }
+    
+    .emoji {
+      font-size: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>
+      <span class="emoji">🔖</span>
+      Twitter 推文提取工具
+    </h1>
+    <p class="subtitle">一键提取 Elon Musk 的推文数据</p>
+    
+    <div class="step">
+      <span class="step-number">1</span>
+      <strong>拖拽下面的按钮到浏览器书签栏</strong>
+    </div>
+    
+    <div class="bookmarklet-box">
+      <p style="margin-bottom: 15px; color: #666;">👇 拖我到书签栏！</p>
+      <a href="javascript:(function(){const tweets=[];document.querySelectorAll('article[data-testid=\"tweet\"]').forEach(article=>{try{const textEl=article.querySelector('[data-testid=\"tweetText\"]');const text=textEl?textEl.innerText:'';const linkEl=article.querySelector('a[href*=\"/status/\"]');const link=linkEl?'https://twitter.com'+linkEl.getAttribute('href'):'';const timeEl=article.querySelector('time');const time=timeEl?timeEl.getAttribute('datetime'):new Date().toISOString();const media=[];article.querySelectorAll('img[src*=\"/media/\"]').forEach(img=>{media.push(img.src)});if(text&&link){tweets.push({text,link,time,media})}}catch(e){}});const result=JSON.stringify(tweets,null,2);const popup=window.open('','_blank','width=700,height=800');popup.document.write(`<html><head><title>提取的推文数据</title><style>body{font-family:monospace;margin:20px;background:#f5f5f5}textarea{width:100%;height:500px;font-size:12px;padding:15px;border:2px solid #ddd;border-radius:8px}button{padding:12px 24px;margin:10px 5px;font-size:14px;background:#1da1f2;color:white;border:none;border-radius:8px;cursor:pointer}button:hover{background:#1a91da}.header{background:white;padding:20px;border-radius:8px;margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,0.1)}</style></head><body><div class=\"header\"><h2 style=\"color:#1da1f2;margin:0\">✅ 成功提取 ${tweets.length} 条推文</h2><p style=\"color:#666;margin:10px 0 0 0\">复制下面的数据，保存到项目的 data/tweets-raw.json 文件</p></div><button onclick=\"navigator.clipboard.writeText(document.getElementById('data').value).then(()=>alert('✅ 已复制到剪贴板！'))\">📋 复制到剪贴板</button><button onclick=\"const blob=new Blob([document.getElementById('data').value],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='tweets-raw.json';a.click()\">💾 下载 JSON 文件</button><br><br><textarea id=\"data\">${result}</textarea></body></html>`)})();" class="bookmarklet-link" draggable="true">
+        📤 提取推文
+      </a>
+      <p style="margin-top: 15px; color: #999; font-size: 0.9rem;">
+        （拖拽到书签栏，或者右键 → 添加到书签）
+      </p>
+    </div>
+    
+    <div class="step">
+      <span class="step-number">2</span>
+      <strong>访问 Twitter 页面</strong>
+    </div>
+    
+    <div class="instruction">
+      <p>在新标签页打开: <a href="https://twitter.com/elonmusk" target="_blank" style="color:#1da1f2; font-weight:bold">https://twitter.com/elonmusk</a></p>
+      <p style="margin-top: 10px;">滚动页面加载更多推文（建议加载 20-30 条）</p>
+    </div>
+    
+    <div class="step">
+      <span class="step-number">3</span>
+      <strong>点击书签</strong>
+    </div>
+    
+    <div class="instruction">
+      <p>在 Twitter 页面点击刚才保存的 "📤 提取推文" 书签</p>
+      <p style="margin-top: 10px;">会自动弹出窗口显示提取的数据</p>
+    </div>
+    
+    <div class="step">
+      <span class="step-number">4</span>
+      <strong>保存数据</strong>
+    </div>
+    
+    <div class="instruction">
+      <p>在弹出窗口中点击 "📋 复制到剪贴板" 或 "💾 下载 JSON 文件"</p>
+      <p style="margin-top: 10px;">保存到: <code style="background:#f0f0f0;padding:3px 8px;border-radius:4px">~/Documents/musk-tweets/data/tweets-raw.json</code></p>
+    </div>
+    
+    <div class="success" id="success">
+      <strong>🎉 完成！</strong><br>
+      现在可以运行生成脚本查看效果了
+    </div>
+    
+    <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+      <h3 style="color: #667eea; margin-bottom: 15px;">📝 快速命令</h3>
+      <div class="code-box">
+cd ~/Documents/musk-tweets<br>
+# 如果已有数据文件，可以直接生成页面<br>
+open index.html
+      </div>
+    </div>
+    
+    <div style="margin-top: 20px; text-align: center; color: #999; font-size: 0.9rem;">
+      <p>💡 提示: 如果拖拽不成功，可以右键点击按钮 → "添加到书签"</p>
+    </div>
+  </div>
+  
+  <script>
+    // 检测剪贴板权限
+    if (navigator.clipboard) {
+      console.log('✅ 剪贴板功能可用');
+    }
+    
+    // 拖拽反馈
+    const link = document.querySelector('.bookmarklet-link');
+    link.addEventListener('dragstart', (e) => {
+      e.dataTransfer.effectAllowed = 'copy';
+      document.body.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+    });
+    
+    link.addEventListener('dragend', () => {
+      document.body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+      document.getElementById('success').style.display = 'block';
+      setTimeout(() => {
+        document.getElementById('success').style.display = 'none';
+      }, 5000);
+    });
+  </script>
+</body>
+</html>
