@@ -10,6 +10,7 @@
 ## ✨ 功能特性
 
 - 📅 **时间线导航** - 左侧按年月分组显示
+- 🌐 **自动翻译** - 支持中英文对照显示
 - 🌙 **夜间模式** - 根据北京时间自动切换（18:00-6:00）
 - 📱 **响应式设计** - 支持手机/平板访问
 - 🔐 **密码保护** - 防止未授权访问
@@ -30,25 +31,44 @@
 
 ## 🚀 使用方法
 
-### 更新推文数据
+### 1. 提取推文数据
+
+使用浏览器书签工具从 X.com 提取推文：
 
 ```bash
-cd ~/musk-tweets
+# 打开书签工具配置页面
+open bookmarklet-tool.html
 
-# 抓取 2024 年至今的所有推文
-./scripts/fetch-2024-now.sh
-
-# 或抓取 2025 年至今的所有推文
-./scripts/fetch-2025-now.sh
+# 按照说明安装书签后：
+# 1. 访问 https://x.com/elonmusk
+# 2. 滚动加载推文
+# 3. 点击书签提取数据
+# 4. 保存到 data/tweets-raw.json
 ```
 
-### 本地预览
+详细说明见 [BOOKMARKLET.md](BOOKMARKLET.md)
+
+### 2. 自动翻译
+
+```bash
+cd ~/Documents/musk-tweets
+
+# 使用 Google Translate（免费）
+node scripts/translate-auto.js
+
+# 或使用工蜂 AI（高质量）
+node scripts/translate-tweets.js
+```
+
+详细说明见 [TRANSLATION.md](TRANSLATION.md)
+
+### 3. 本地预览
 
 ```bash
 open index.html
 ```
 
-### 部署到 GitHub Pages
+### 4. 部署到 GitHub Pages
 
 ```bash
 git add .
@@ -101,6 +121,10 @@ const targetStartDate = new Date('2024-01-01T00:00:00Z');  // 修改起始日期
 - **抓取工具**: OpenClaw + browser-operation skill
 
 ## 📝 更新日志
+
+### 2026-04-11
+- ✅ 添加自动翻译功能（Google Translate + 工蜂 AI）
+- ✅ 创建翻译脚本和使用文档
 
 ### 2026-04-05
 - ✅ 简化左侧时间线为按年月显示
