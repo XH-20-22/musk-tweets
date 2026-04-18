@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Elon Musk Tracker | BHGL</title>
   <meta name="description" content="实时追踪 Elon Musk 的推特动态，提供中英文对照翻译">
+  <!-- hls.js: 支持 m3u8 视频流播放 -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.7/dist/hls.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
@@ -47,11 +49,47 @@
     .tweet-text-en { font-size: 1.05rem; line-height: 1.6; color: var(--text-dark); margin-bottom: 15px; }
     .content-divider { border: none; border-top: 1px solid var(--border); margin: 15px 0; }
     .tweet-text-cn { font-size: 1rem; line-height: 1.6; color: var(--text-light); padding-top: 5px; }
+
+    /* ===== 媒体区域 ===== */
     .tweet-media { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 15px; }
     .tweet-media img { width: 100%; border-radius: 8px; cursor: pointer; transition: transform 0.3s; }
     .tweet-media img:hover { transform: scale(1.05); }
-    .tweet-media video { width: 100%; border-radius: 8px; max-height: 400px; background: #000; display: block; }
-    .tweet-media .video-placeholder { padding: 12px 16px; background: #f5f5f5; border-radius: 8px; font-size: 0.9rem; color: #666; text-align: center; }
+
+    /* ===== 视频播放器 ===== */
+    .video-wrap { position: relative; width: 100%; border-radius: 10px; overflow: hidden; background: #000; }
+    .video-wrap video { width: 100%; max-height: 420px; display: block; background: #000; }
+
+    /* ===== 字幕区域 ===== */
+    .subtitle-box {
+      background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+      border-left: 3px solid var(--primary);
+      border-radius: 0 8px 8px 0;
+      padding: 10px 14px;
+      margin-top: 8px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+    .subtitle-en { color: #444; margin-bottom: 6px; }
+    .subtitle-cn { color: var(--primary); font-weight: 500; }
+    .subtitle-label {
+      font-size: 0.75rem;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+
+    /* 视频无法播放时的占位 */
+    .video-placeholder {
+      padding: 16px;
+      background: #f5f5f5;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: #666;
+      text-align: center;
+    }
+    .video-placeholder a { color: var(--primary); }
+
     .meta-divider { border: none; border-top: 1px solid var(--border); margin: 15px 0; }
     .tweet-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
     .tweet-time { color: var(--text-light); font-size: 0.9rem; }
@@ -118,7 +156,7 @@
 
   <script>
     // ===== 配置 =====
-    const DATA_URL = 'tweets.json';  // 相对路径，自动适配 GitHub Pages 和本地
+    const DATA_URL = 'tweets.json';
 
     // ===== 状态 =====
     let allTweets = [];
@@ -168,7 +206,6 @@
       const now = new Date();
       return allTweets.filter(t => {
         const date = new Date(t.created_at);
-        // 时间筛选
         let timeOk = true;
         if (currentFilter === 'today') {
           timeOk = date.toDateString() === now.toDateString();
@@ -177,7 +214,6 @@
         } else if (currentFilter === 'month') {
           timeOk = date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
         }
-        // 搜索筛选
         let searchOk = true;
         if (currentQuery) {
           const q = currentQuery.toLowerCase();
@@ -188,19 +224,67 @@
       });
     }
 
-    // ===== 格式化数字 =====
+    // ===== 格式化 =====
     function fmtNum(n) {
       if (!n && n !== 0) return '—';
       if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
       if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
       return n;
     }
-
-    // ===== 格式化时间 =====
     function fmtDate(dateStr) {
       if (!dateStr) return '';
       const d = new Date(dateStr);
       return d.toLocaleString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+    function escHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ===== 渲染视频（支持 hls.js）=====
+    function buildVideoHtml(m, idx, tweetId) {
+      if (!m.url) {
+        // 无 URL，显示占位
+        return `<div class="video-placeholder">🎥 视频暂无直链，<a href="https://x.com/elonmusk" target="_blank">前往 X.com 查看</a></div>`;
+      }
+      const isHls = m.url.includes('.m3u8');
+      const videoId = `vid-${tweetId}-${idx}`;
+
+      // 字幕块（如果有）
+      let subtitleHtml = '';
+      if (m.subtitle_en || m.subtitle_cn) {
+        subtitleHtml = `<div class="subtitle-box">
+          ${m.subtitle_en ? `<div class="subtitle-label">📝 字幕原文</div><div class="subtitle-en">${escHtml(m.subtitle_en)}</div>` : ''}
+          ${m.subtitle_cn ? `<div class="subtitle-label" style="margin-top:6px;">🈶 中文翻译</div><div class="subtitle-cn">${escHtml(m.subtitle_cn)}</div>` : ''}
+        </div>`;
+      }
+
+      if (isHls) {
+        // m3u8 流：用 hls.js 挂载
+        return `<div class="video-wrap">
+          <video id="${videoId}" controls preload="metadata" style="width:100%;max-height:420px;"></video>
+        </div>${subtitleHtml}
+        <script>
+          (function() {
+            var v = document.getElementById('${videoId}');
+            if (!v) return;
+            if (Hls.isSupported()) {
+              var hls = new Hls();
+              hls.loadSource('${m.url}');
+              hls.attachMedia(v);
+            } else if (v.canPlayType('application/vnd.apple.mpegurl')) {
+              v.src = '${m.url}';
+            } else {
+              v.parentElement.outerHTML = '<div class="video-placeholder">🎥 当前浏览器不支持 HLS，<a href="${m.url}" target="_blank">点击下载视频</a></div>';
+            }
+          })();
+        <\/script>`;
+      } else {
+        // mp4 直链
+        return `<div class="video-wrap">
+          <video src="${m.url}" controls preload="metadata" style="width:100%;max-height:420px;"></video>
+        </div>${subtitleHtml}`;
+      }
     }
 
     // ===== 渲染推文列表 =====
@@ -218,13 +302,12 @@
         const isRead = readTweets.includes(String(t.id)) || t.read;
         const readClass = isRead ? 'read' : 'unread';
         const stats = t.stats || {};
+
         const mediaHtml = (t.media && t.media.length)
-          ? `<div class="tweet-media">${t.media.map(m =>
+          ? `<div class="tweet-media">${t.media.map((m, idx) =>
               m.type === 'photo'
                 ? `<img src="${m.url}" alt="media" loading="lazy" onclick="window.open('${m.url}','_blank')">`
-                : (m.url
-                  ? `<video src="${m.url}" controls preload="metadata" style="width:100%;border-radius:8px;max-height:400px;background:#000;"></video>`
-                  : `<div class="video-placeholder">🎥 视频 (${m.type || 'video'}) — <a href="${m.url || '#'}" target="_blank" style="color:#667eea;">点击查看</a></div>`)
+                : buildVideoHtml(m, idx, t.id)
             ).join('')}</div>`
           : '';
 
@@ -255,7 +338,7 @@
       // 绑定已读事件
       container.querySelectorAll('.tweet-card').forEach(card => {
         card.addEventListener('click', e => {
-          if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') return;
+          if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON' || e.target.tagName === 'VIDEO') return;
           if (card.classList.contains('unread')) {
             card.classList.remove('unread');
             card.classList.add('read');
@@ -269,18 +352,13 @@
       });
     }
 
-    // ===== 底部更新时间 =====
+    // ===== 底部 =====
     function updateFooter() {
       const latest = allTweets[0] ? new Date(allTweets[0].created_at).toLocaleString('zh-CN') : '—';
       document.getElementById('footer').innerHTML =
         `<p>Last Update: ${latest}</p>
          <p>数据来源：X.com (Twitter) | 翻译：Google Translate</p>
          <p>Made with ❤️ by BHGL</p>`;
-    }
-
-    // ===== HTML 转义 =====
-    function escHtml(str) {
-      return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
     // ===== 分享 =====
