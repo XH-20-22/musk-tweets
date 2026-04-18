@@ -1,0 +1,30 @@
+# BHGL - Musk Tweets Tracker 版本记录
+
+## 当前版本：v1.0.0
+
+---
+
+## 版本历史
+
+### v1.0.0 (2026-04-18)
+**功能完整的首个稳定版本**
+
+新增：
+- hls.js 集成，支持 m3u8 / mp4 视频播放
+- yt-dlp 自动获取视频真实 URL
+- 字幕区域 UI（subtitle_en + subtitle_cn）
+- 视频 URL 批量修复脚本 scripts/fix-video-urls.ps1
+- 安装 yt-dlp + ffmpeg 工具链
+
+修复：
+- 视频渲染原先只显示 🎥 文字占位符
+- 视频 URL 抓取时硬编码为空字符串
+
+---
+
+### v0.x（历史开发阶段）
+- 前端动态 fetch + tweets.json 数据源
+- Google Translate 自动翻译推文正文
+- 搜索 / 筛选 / 已读标记功能
+- 书签工具 bookmarklet
+- 自动抓取 + Git push 定时任务
