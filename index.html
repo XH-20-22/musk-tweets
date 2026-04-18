@@ -50,6 +50,8 @@
     .tweet-media { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 15px; }
     .tweet-media img { width: 100%; border-radius: 8px; cursor: pointer; transition: transform 0.3s; }
     .tweet-media img:hover { transform: scale(1.05); }
+    .tweet-media video { width: 100%; border-radius: 8px; max-height: 400px; background: #000; display: block; }
+    .tweet-media .video-placeholder { padding: 12px 16px; background: #f5f5f5; border-radius: 8px; font-size: 0.9rem; color: #666; text-align: center; }
     .meta-divider { border: none; border-top: 1px solid var(--border); margin: 15px 0; }
     .tweet-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
     .tweet-time { color: var(--text-light); font-size: 0.9rem; }
@@ -220,7 +222,9 @@
           ? `<div class="tweet-media">${t.media.map(m =>
               m.type === 'photo'
                 ? `<img src="${m.url}" alt="media" loading="lazy" onclick="window.open('${m.url}','_blank')">`
-                : `<div style="padding:8px;background:#f5f5f5;border-radius:8px;font-size:0.9rem;">🎥 ${m.type}</div>`
+                : (m.url
+                  ? `<video src="${m.url}" controls preload="metadata" style="width:100%;border-radius:8px;max-height:400px;background:#000;"></video>`
+                  : `<div class="video-placeholder">🎥 视频 (${m.type || 'video'}) — <a href="${m.url || '#'}" target="_blank" style="color:#667eea;">点击查看</a></div>`)
             ).join('')}</div>`
           : '';
 

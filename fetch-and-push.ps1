@@ -48,10 +48,19 @@ $JS_EXTRACT = @'
         return parseInt(t.replace(/[^0-9]/g, '')) || 0;
       };
 
-      const hasVideo = !!article.querySelector('video');
+      const videoEl = article.querySelector('video');
       const imgEls = Array.from(article.querySelectorAll('img[src*="pbs.twimg.com"]'));
       const media = [];
-      if (hasVideo) media.push({ type: 'video', url: '' });
+      if (videoEl) {
+        // 尝试获取视频 src（m3u8 或 mp4）
+        const videoSrc = videoEl.src || videoEl.querySelector('source')?.src || '';
+        // 也从 <source> 元素获取
+        const sourceEls = Array.from(videoEl.querySelectorAll('source'));
+        const bestSrc = sourceEls.find(s => s.src.includes('.mp4'))?.src
+          || sourceEls[0]?.src
+          || videoSrc;
+        media.push({ type: 'video', url: bestSrc });
+      }
       imgEls.forEach(img => media.push({ type: 'photo', url: img.src }));
 
       if (text || media.length > 0) {
