@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPO Watch — SpaceX · Anthropic · OpenAI | BHGL</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #43e97b;
+      --secondary: #38f9d7;
+      --dark: #0d1f15;
+      --bg1: #0f1c0e;
+      --bg2: #112210;
+      --card: rgba(255,255,255,0.05);
+      --card-border: rgba(255,255,255,0.1);
+      --text: #e0ffe8;
+      --text-muted: rgba(200,240,210,0.55);
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(135deg, #0a1628 0%, #0d2b1a 50%, #0a1628 100%);
+      min-height: 100vh;
+      color: var(--text);
+    }
+
+    /* ── Nav ── */
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 24px;
+      background: rgba(0,0,0,0.3);
+      border-bottom: 1px solid var(--card-border);
+      backdrop-filter: blur(10px);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav a {
+      color: rgba(200,240,210,0.6);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+    .nav a:hover { color: #fff; }
+    .nav .sep { color: rgba(255,255,255,0.2); }
+    .nav .current { color: var(--primary); font-weight: 600; }
+
+    /* ── Header ── */
+    .page-header {
+      text-align: center;
+      padding: 50px 20px 36px;
+      position: relative;
+    }
+    .page-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(67,233,123,0.15) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .page-header .icon { font-size: 3rem; margin-bottom: 12px; display: block; }
+    .page-header h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, #43e97b, #38f9d7, #00f2fe);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    .page-header p { color: var(--text-muted); font-size: 1rem; }
+
+    /* ── Countdown Banner ── */
+    .countdown-banner {
+      max-width: 800px;
+      margin: 0 auto 40px;
+      padding: 0 20px;
+    }
+    .countdown-card {
+      background: linear-gradient(135deg, rgba(67,233,123,0.12), rgba(56,249,215,0.08));
+      border: 1px solid rgba(67,233,123,0.3);
+      border-radius: 16px;
+      padding: 20px 28px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .countdown-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
+    .countdown-value { font-size: 1.5rem; font-weight: 800; color: #43e97b; }
+    .countdown-sep { width: 1px; height: 40px; background: rgba(67,233,123,0.25); }
+    .countdown-note { font-size: 0.82rem; color: var(--text-muted); flex: 1; min-width: 200px; }
+    .countdown-note strong { color: #fff; }
+
+    /* ── Content ── */
+    .content {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    /* ── Section Block ── */
+    .section-block {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+    .section-block-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 22px 24px;
+      border-bottom: 1px solid var(--card-border);
+    }
+    .section-block-icon {
+      width: 42px; height: 42px;
+      border-radius: 11px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .ic-spacex { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+    .ic-anthropic { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .ic-openai { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    .ic-cerebras { background: linear-gradient(135deg, #ffd32a, #ff9f1a); }
+
+    .section-block-title { font-size: 1.2rem; font-weight: 700; color: #fff; }
+    .section-block-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+    .update-badge {
+      margin-left: auto;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 10px;
+      background: rgba(67,233,123,0.15);
+      color: #7bed9f;
+      border: 1px solid rgba(67,233,123,0.3);
+    }
+
+    .section-block-body { padding: 20px 24px; }
+
+    /* ── Timeline ── */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      position: relative;
+      padding-left: 24px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px; top: 8px; bottom: 8px;
+      width: 2px;
+      background: linear-gradient(to bottom, rgba(67,233,123,0.5), rgba(67,233,123,0.05));
+    }
+    .tl-item {
+      position: relative;
+      padding: 0 0 20px 20px;
+    }
+    .tl-item:last-child { padding-bottom: 0; }
+    .tl-dot {
+      position: absolute;
+      left: -24px;
+      top: 5px;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #43e97b;
+      border: 3px solid #0a1628;
+      box-shadow: 0 0 8px rgba(67,233,123,0.6);
+    }
+    .tl-dot.dim { background: rgba(67,233,123,0.3); box-shadow: none; }
+    .tl-date { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; letter-spacing: 0.5px; }
+    .tl-title { font-size: 0.92rem; font-weight: 700; color: #fff; margin-bottom: 4px; line-height: 1.4; }
+    .tl-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* ── Data Table ── */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin: 14px 0;
+    }
+    .data-table th {
+      padding: 8px 12px;
+      text-align: left;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--card-border);
+    }
+    .data-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .data-table td:first-child { color: #fff; font-weight: 600; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: rgba(255,255,255,0.03); }
+    .val-green { color: #43e97b !important; font-weight: 700 !important; }
+    .val-yellow { color: #ffd32a !important; }
+    .val-red { color: #ff6b81 !important; }
+
+    /* ── Highlight Box ── */
+    .highlight-box {
+      background: rgba(67,233,123,0.07);
+      border: 1px solid rgba(67,233,123,0.2);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin: 14px 0 0;
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+    .highlight-box strong { color: #7bed9f; }
+
+    /* ── Warning Box ── */
+    .warn-box {
+      background: rgba(255,165,2,0.07);
+      border: 1px solid rgba(255,165,2,0.2);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin: 14px 0 0;
+      font-size: 0.83rem;
+      color: rgba(255,210,100,0.7);
+      line-height: 1.7;
+    }
+    .warn-box strong { color: #ffd32a; }
+
+    /* ── Source ── */
+    .source-line {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.2);
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    /* ── Back Button ── */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+    .back-btn:hover { color: #fff; }
+
+    /* ── Footer ── */
+    .site-footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.18);
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    @media (max-width: 600px) {
+      .page-header h1 { font-size: 1.8rem; }
+      .countdown-card { flex-direction: column; gap: 12px; }
+      .countdown-sep { width: 100%; height: 1px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav class="nav">
+  <a href="index.html">🔭 BHGL</a>
+  <span class="sep">/</span>
+  <span class="current">🚀 IPO Watch</span>
+</nav>
+
+<!-- ── Header ── -->
+<div class="page-header">
+  <span class="icon">🚀</span>
+  <h1>IPO Watch</h1>
+  <p>SpaceX · Anthropic · OpenAI &nbsp;·&nbsp; 史上最大 IPO 浪潮追踪</p>
+</div>
+
+<!-- ── Countdown Banner ── -->
+<div class="countdown-banner">
+  <div class="countdown-card">
+    <div>
+      <div class="countdown-label">SpaceX 招股书</div>
+      <div class="countdown-value">本周披露</div>
+    </div>
+    <div class="countdown-sep"></div>
+    <div>
+      <div class="countdown-label">路演启动</div>
+      <div class="countdown-value">2026-06-08</div>
+    </div>
+    <div class="countdown-sep"></div>
+    <div>
+      <div class="countdown-label">最终定价</div>
+      <div class="countdown-value">2026-06-11</div>
+    </div>
+    <div class="countdown-sep"></div>
+    <div>
+      <div class="countdown-label">正式挂牌</div>
+      <div class="countdown-value">2026-06-12</div>
+    </div>
+    <div class="countdown-note">
+      <strong>纳斯达克 · 代码 SPCX</strong><br>
+      目标募资 700-750 亿美元，估值 1.75-2 万亿美元，将打破史上 IPO 融资纪录
+    </div>
+  </div>
+</div>
+
+<!-- ── Content ── -->
+<div class="content">
+
+  <!-- SpaceX -->
+  <div class="section-block">
+    <div class="section-block-header">
+      <div class="section-block-icon ic-spacex">🚀</div>
+      <div>
+        <div class="section-block-title">SpaceX — 史上最大 IPO</div>
+        <div class="section-block-sub">纳斯达克 SPCX · 2026-06-12 挂牌</div>
+      </div>
+      <span class="update-badge">2026-05-18 更新</span>
+    </div>
+    <div class="section-block-body">
+
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-date">2026-05-19 前后 · 最新</div>
+          <div class="tl-title">S-1 招股书正式公开披露</div>
+          <div class="tl-desc">最快本周（2026-05-19 前后）提交，正式启动 IPO 流程</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot dim"></div>
+          <div class="tl-date">2026-06-08 · 计划</div>
+          <div class="tl-title">路演启动</div>
+          <div class="tl-desc">面向机构投资者路演，最终确定发行价</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot dim"></div>
+          <div class="tl-date">2026-06-11 · 计划</div>
+          <div class="tl-title">最终定价</div>
+          <div class="tl-desc">询价结束，确定发行价，确定最终募资规模</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot dim"></div>
+          <div class="tl-date">2026-06-12 · 计划</div>
+          <div class="tl-title">正式挂牌纳斯达克（SPCX）</div>
+          <div class="tl-desc">全球最大科技 IPO 落地，SpaceX 跻身全球市值 Top 10</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot dim"></div>
+          <div class="tl-date">2026-02 · 历史</div>
+          <div class="tl-title">SpaceX 以全股票方式收购 xAI</div>
+          <div class="tl-desc">合并估值约 1.25 万亿美元，xAI（Grok）并入 SpaceX 财报</div>
+        </div>
+      </div>
+
+      <table class="data-table" style="margin-top:20px;">
+        <thead>
+          <tr><th>指标</th><th>数值</th><th>备注</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>目标募资</td><td class="val-green">700-750 亿美元</td><td>打破沙特阿美 294 亿纪录</td></tr>
+          <tr><td>目标估值</td><td class="val-green">1.75-2 万亿美元</td><td>跻身全球市值 Top 10</td></tr>
+          <tr><td>2025 年总营收</td><td>186.7 亿美元</td><td>同比大幅增长</td></tr>
+          <tr><td>2025 年净亏损</td><td class="val-red">49.4 亿美元</td><td>受 xAI 并表拖累</td></tr>
+          <tr><td>Starlink 2025 营收</td><td>114 亿美元（占 61%）</td><td>同比+50%，EBITDA 利润率 63%</td></tr>
+          <tr><td>火箭发射 2025 营收</td><td>41 亿美元（占 22%）</td><td>2025 年超 160 次发射</td></tr>
+          <tr><td>xAI（Grok）2025 营收</td><td>32 亿美元（占 17%）</td><td>现金消耗约 140 亿美元</td></tr>
+          <tr><td>Starlink 用户</td><td>900 万+</td><td>持续增长</td></tr>
+        </tbody>
+      </table>
+
+      <div class="warn-box">
+        <strong>⚠️ 治理争议：</strong>马斯克计划发行 <strong>B 类股（10 倍投票权）</strong>，确保绝对控制权。薪酬方案考核目标：①火星建立百万人口殖民地；②太空建成 100 太瓦算力数据中心。<br>
+        <strong>美国三大公共养老金</strong>（合计管理超 1 万亿美元资产）联名反对，称架构"极端"。CNBC 名嘴警告：若流通股稀少，市值或冲上 5 万亿美元，形成"独立泡沫"。
+      </div>
+
+      <div class="highlight-box">
+        <strong>🌏 市场影响：</strong>A 股商业航天板块已提前被点燃。信维通信（星链地面终端连接器全球独家一级供应商）、西部材料（为星舰提供铌合金部件）等已打入 SpaceX 核心供应链。SpaceX IPO 成功将为 OpenAI、Anthropic 等 AI 独角兽"开门"，但密集超大 IPO 潮可能对整体股市产生资金虹吸效应。
+      </div>
+
+      <div class="source-line">来源：Fortune · CNBC（2026-05-14/15）· 36Kr（2026-05-16）· 新浪财经（2026-05-17/18）</div>
+    </div>
+  </div>
+
+  <!-- Anthropic -->
+  <div class="section-block">
+    <div class="section-block-header">
+      <div class="section-block-icon ic-anthropic">🤖</div>
+      <div>
+        <div class="section-block-title">Anthropic — 估值反超 OpenAI</div>
+        <div class="section-block-sub">今夏 IPO · 估值 1.2 万亿美元</div>
+      </div>
+      <span class="update-badge">2026-05-17 更新</span>
+    </div>
+    <div class="section-block-body">
+
+      <table class="data-table">
+        <thead>
+          <tr><th>指标</th><th>数值</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>最新估值</td><td class="val-green">1.2 万亿美元（链上 Pre-IPO）</td></tr>
+          <tr><td>IPO 前估值</td><td>约 9000 亿美元</td></tr>
+          <tr><td>今夏募资目标</td><td>最高 500 亿美元</td></tr>
+          <tr><td>完成募资后估值</td><td class="val-green">逼近 1 万亿美元</td></tr>
+          <tr><td>对比 OpenAI</td><td class="val-yellow">首次正式反超（OpenAI 约 1.1 万亿）</td></tr>
+          <tr><td>谷歌长约</td><td>2000 亿美元长期合同背书</td></tr>
+          <tr><td>GPU 资源</td><td>马斯克 22 万张顶级 GPU（通过 xAI 合作）</td></tr>
+        </tbody>
+      </table>
+
+      <div class="highlight-box">
+        <strong>🌐 定位：</strong>Anthropic 明确拒绝向中国提供服务（2021 年起）；2026 年 2 月拒绝美国五角大楼合作。市场将其视为 SpaceX 之后第二大 IPO 看点，聚焦"安全优先"AI 赛道。
+      </div>
+
+      <div class="source-line">来源：新浪财经 · 36Kr（2026-05-13/17）</div>
+    </div>
+  </div>
+
+  <!-- OpenAI -->
+  <div class="section-block">
+    <div class="section-block-header">
+      <div class="section-block-icon ic-openai">🧠</div>
+      <div>
+        <div class="section-block-title">OpenAI — IPO 受诉讼牵制</div>
+        <div class="section-block-sub">估值约 1.1 万亿美元 · 营利化转型争议持续</div>
+      </div>
+      <span class="update-badge">关联庭审</span>
+    </div>
+    <div class="section-block-body">
+
+      <table class="data-table">
+        <thead>
+          <tr><th>指标</th><th>数值</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>最新估值</td><td>约 1.1 万亿美元</td></tr>
+          <tr><td>Amazon 投资</td><td class="val-green">500 亿美元</td></tr>
+          <tr><td>Nvidia 投资</td><td>300 亿美元</td></tr>
+          <tr><td>SoftBank 投资</td><td>300 亿美元</td></tr>
+          <tr><td>微软累计投资</td><td>130 亿美元（2019-2023）</td></tr>
+          <tr><td>IPO 风险</td><td class="val-red">Musk 诉讼若胜诉可能导致上市受阻</td></tr>
+        </tbody>
+      </table>
+
+      <div class="warn-box">
+        <strong>⚖️ 诉讼牵制：</strong>Musk vs OpenAI 庭审正在进行，马斯克索赔最高 1340 亿美元并要求撤销营利化转型。陪审团若支持马斯克，将直接影响 OpenAI 的 IPO 计划。法官裁定：若认定 Musk 超期起诉，极有可能直接判 OpenAI 胜诉。
+      </div>
+
+      <div class="highlight-box" style="background:rgba(102,126,234,0.07);border-color:rgba(102,126,234,0.2);">
+        <strong style="color:#a29bfe;">📌 关键里程碑：</strong>OpenAI 已完成从非营利到混合营利结构的转型。Sam Altman 出庭作证（2026-05-13），各方投资额首次在庭审中完整披露：Amazon 500亿 > SoftBank 300亿 > Nvidia 300亿 > 微软 130亿。
+      </div>
+
+      <div class="source-line">来源：CNBC · Bloomberg（2026-05-13/15）</div>
+    </div>
+  </div>
+
+  <!-- Cerebras -->
+  <div class="section-block">
+    <div class="section-block-header">
+      <div class="section-block-icon ic-cerebras">💥</div>
+      <div>
+        <div class="section-block-title">Cerebras Systems — AI IPO 热潮引爆</div>
+        <div class="section-block-sub">纳斯达克 CBRS · 2026-05-14 挂牌</div>
+      </div>
+      <span class="update-badge">已完成</span>
+    </div>
+    <div class="section-block-body">
+
+      <table class="data-table">
+        <thead>
+          <tr><th>指标</th><th>数值</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>交易所</td><td>纳斯达克，代码 CBRS</td></tr>
+          <tr><td>发行价</td><td>185 美元/股</td></tr>
+          <tr><td>首日收盘</td><td class="val-green">311 美元（+68.1%）</td></tr>
+          <tr><td>盘中最高</td><td class="val-green">386 美元（+109%），触发熔断</td></tr>
+          <tr><td>募资规模</td><td>55.5 亿美元（认购超 25 倍）</td></tr>
+          <tr><td>首日市值</td><td>约 950 亿美元</td></tr>
+          <tr><td>2025 年营收</td><td>5.1 亿美元（同比+76%）</td></tr>
+          <tr><td>经营亏损</td><td class="val-red">约 1.46 亿美元</td></tr>
+        </tbody>
+      </table>
+
+      <div class="highlight-box">
+        <strong>💡 市场意义：</strong>Cerebras 宣称 AI 推理速度可达英伟达 GPU 的 10-20 倍（晶圆级引擎技术）。与 OpenAI 签订超 100 亿美元算力合作协议。被视为 SpaceX、OpenAI、Anthropic 三大万亿级 IPO 的强力预热，也是 AI 科技 IPO 市场回暖的"试金石"。
+      </div>
+
+      <div class="source-line">来源：CNBC（2026-05-16）· 腾讯新闻（2026-05-15）· EET-China（2026-05-15）</div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  BHGL IPO Watch &nbsp;·&nbsp; 数据来源：CNBC · 36Kr · 新浪财经 · Fortune · Bloomberg &nbsp;·&nbsp; 更新：2026-05-18
+</footer>
+
+</body>
+</html>

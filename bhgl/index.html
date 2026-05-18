@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BHGL — Musk Universe Tracker</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #667eea;
+      --secondary: #764ba2;
+      --accent1: #f093fb;
+      --accent2: #4facfe;
+      --accent3: #43e97b;
+      --dark: #1a1a2e;
+      --card-bg: rgba(255,255,255,0.07);
+      --card-border: rgba(255,255,255,0.12);
+      --text: #e8e8f0;
+      --text-muted: rgba(232,232,240,0.6);
+      --badge-hot: #ff4757;
+      --badge-new: #2ed573;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+      min-height: 100vh;
+      color: var(--text);
+    }
+
+    /* ─── Header ─── */
+    .site-header {
+      text-align: center;
+      padding: 60px 20px 40px;
+      position: relative;
+    }
+    .site-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(102,126,234,0.25) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .logo-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+    .logo-icon {
+      width: 52px; height: 52px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      box-shadow: 0 8px 24px rgba(102,126,234,0.4);
+    }
+    .site-header h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, #667eea, #f093fb, #4facfe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -1px;
+    }
+    .site-header .tagline {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+      letter-spacing: 0.5px;
+    }
+    .last-updated {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 14px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.06);
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+    }
+    .dot-live {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #2ed573;
+      animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.7); }
+    }
+
+    /* ─── Stats Bar ─── */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding: 0 20px 40px;
+    }
+    .stat-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      padding: 8px 18px;
+      border-radius: 30px;
+      font-size: 0.88rem;
+      backdrop-filter: blur(8px);
+    }
+    .stat-chip .val { font-weight: 700; color: #fff; }
+
+    /* ─── Section Grid ─── */
+    .sections {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 28px;
+    }
+
+    /* ─── Section Card ─── */
+    .section-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+      display: flex;
+      flex-direction: column;
+    }
+    .section-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+      border-color: rgba(255,255,255,0.22);
+    }
+    .card-header {
+      padding: 24px 24px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .card-icon {
+      width: 48px; height: 48px;
+      border-radius: 13px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+    .card-icon.blue   { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+    .card-icon.purple { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .card-icon.pink   { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    .card-icon.green  { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+
+    .card-title-block { flex: 1; }
+    .card-num {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.3;
+    }
+    .card-sub {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+    .badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 10px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .badge-hot  { background: rgba(255,71,87,0.2);  color: #ff6b81; border: 1px solid rgba(255,71,87,0.3); }
+    .badge-new  { background: rgba(46,213,115,0.2); color: #7bed9f; border: 1px solid rgba(46,213,115,0.3); }
+    .badge-live { background: rgba(79,172,254,0.2); color: #74b9ff; border: 1px solid rgba(79,172,254,0.3); }
+
+    /* ─── Updates List ─── */
+    .updates-list {
+      padding: 18px 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+    .update-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 10px 12px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 10px;
+      border-left: 3px solid transparent;
+      transition: background 0.2s, border-color 0.2s;
+      cursor: default;
+    }
+    .update-item:hover { background: rgba(255,255,255,0.08); }
+    .update-item.hot   { border-left-color: #ff4757; }
+    .update-item.new   { border-left-color: #2ed573; }
+    .update-item.info  { border-left-color: #4facfe; }
+    .update-item.warn  { border-left-color: #ffa502; }
+
+    .update-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+    .update-body { flex: 1; min-width: 0; }
+    .update-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: #fff;
+      line-height: 1.4;
+      margin-bottom: 2px;
+    }
+    .update-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .update-date {
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.3);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ─── Card Footer CTA ─── */
+    .card-cta {
+      margin: 0 24px 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn-primary {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.25s;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary.blue   { background: linear-gradient(135deg, #4facfe, #00f2fe); color: #0a1628; }
+    .btn-primary.purple { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
+    .btn-primary.pink   { background: linear-gradient(135deg, #f093fb, #f5576c); color: #fff; }
+    .btn-primary.green  { background: linear-gradient(135deg, #43e97b, #38f9d7); color: #0a2010; }
+    .btn-primary:hover  { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.35); filter: brightness(1.08); }
+
+    .btn-ghost {
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      font-size: 1rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.25s;
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+    /* ─── Divider ─── */
+    .card-divider {
+      height: 1px;
+      background: var(--card-border);
+      margin: 0 24px;
+    }
+
+    /* ─── Latest Highlight ─── */
+    .highlight-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 14px 24px 0;
+      padding: 8px 14px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .highlight-pill strong { color: #fff; }
+
+    /* ─── Footer ─── */
+    .site-footer {
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.2);
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    /* ─── Animations ─── */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .sections .section-card:nth-child(1) { animation: fadeInUp 0.5s ease 0.1s both; }
+    .sections .section-card:nth-child(2) { animation: fadeInUp 0.5s ease 0.2s both; }
+    .sections .section-card:nth-child(3) { animation: fadeInUp 0.5s ease 0.3s both; }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 700px) {
+      .site-header h1 { font-size: 2rem; }
+      .sections { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── Header ─── -->
+<header class="site-header">
+  <div class="logo-row">
+    <div class="logo-icon">🔭</div>
+    <h1>BHGL</h1>
+  </div>
+  <p class="tagline">Musk Universe Tracker &nbsp;·&nbsp; 实时追踪马斯克宇宙动态</p>
+  <div class="last-updated">
+    <span class="dot-live"></span>
+    最后更新：2026-05-18 &nbsp;|&nbsp; 数据来源：CNBC · 36Kr · 新浪财经 · AP News
+  </div>
+</header>
+
+<!-- ─── Stats Bar ─── -->
+<div class="stats-bar">
+  <div class="stat-chip">🐦 <span class="val">Musk 推文</span>&nbsp;持续追踪中</div>
+  <div class="stat-chip">💰 <span class="val">SpaceX IPO</span>&nbsp;2026-06-12 纳斯达克</div>
+  <div class="stat-chip">⚖️ <span class="val">庭审</span>&nbsp;陪审团评议进行中</div>
+  <div class="stat-chip">🤖 <span class="val">Anthropic 估值</span>&nbsp;1.2万亿美元</div>
+</div>
+
+<!-- ─── Cards Grid ─── -->
+<div class="sections">
+
+  <!-- ── Card 1: Musk Tweets ── -->
+  <div class="section-card">
+    <div class="card-header">
+      <div class="card-icon blue">🐦</div>
+      <div class="card-title-block">
+        <div class="card-num">01 · Musk Tweets</div>
+        <div class="card-title">马斯克推特追踪器</div>
+        <div class="card-sub">实时抓取 · 中英对照 · 视频字幕</div>
+      </div>
+      <span class="badge badge-live">Live</span>
+    </div>
+
+    <div class="highlight-pill">
+      🕘 每日 09:00 &amp; 21:00 自动抓取 &nbsp;|&nbsp; <strong>GitHub Pages 托管</strong>
+    </div>
+
+    <div class="updates-list">
+      <div class="update-item hot">
+        <span class="update-icon">🔥</span>
+        <div class="update-body">
+          <div class="update-title">推文实时中英对照</div>
+          <div class="update-desc">自动翻译 · 点赞/转发/评论数 · 图片视频一并展示</div>
+        </div>
+        <span class="update-date">最热</span>
+      </div>
+      <div class="update-item new">
+        <span class="update-icon">🎬</span>
+        <div class="update-body">
+          <div class="update-title">视频 + HLS 字幕播放</div>
+          <div class="update-desc">yt-dlp 获取原始 URL，hls.js 前端播放，自动生成中英字幕块</div>
+        </div>
+        <span class="update-date">v1.0</span>
+      </div>
+      <div class="update-item info">
+        <span class="update-icon">🔍</span>
+        <div class="update-body">
+          <div class="update-title">搜索 · 筛选 · 已读标记</div>
+          <div class="update-desc">支持中英文搜索，按今天/本周/本月筛选，已读状态本地存储</div>
+        </div>
+        <span class="update-date">功能</span>
+      </div>
+      <div class="update-item info">
+        <span class="update-icon">📌</span>
+        <div class="update-body">
+          <div class="update-title">书签工具 · 快捷键</div>
+          <div class="update-desc">浏览器书签一键抓取，/ 键聚焦搜索，Esc 重置筛选</div>
+        </div>
+        <span class="update-date">工具</span>
+      </div>
+    </div>
+
+    <div class="card-divider"></div>
+    <div class="card-cta" style="margin-top:16px;">
+      <a href="../index.html" class="btn-primary blue">🐦 进入推文追踪器</a>
+      <a href="https://xh-20-22.github.io/musk-tweets/" target="_blank" class="btn-ghost" title="GitHub Pages 线上版">🌐</a>
+    </div>
+  </div>
+
+  <!-- ── Card 2: IPO ── -->
+  <div class="section-card">
+    <div class="card-header">
+      <div class="card-icon green">🚀</div>
+      <div class="card-title-block">
+        <div class="card-num">02 · IPO Watch</div>
+        <div class="card-title">SpaceX · Anthropic · OpenAI</div>
+        <div class="card-sub">史上最大 IPO 倒计时 · 估值与治理</div>
+      </div>
+      <span class="badge badge-hot">🔥 热</span>
+    </div>
+
+    <div class="highlight-pill">
+      🗓 <strong>SpaceX 定价：2026-06-11</strong> &nbsp;|&nbsp; 上市：2026-06-12 纳斯达克 SPCX
+    </div>
+
+    <div class="updates-list">
+      <div class="update-item hot">
+        <span class="update-icon">🚀</span>
+        <div class="update-body">
+          <div class="update-title">SpaceX IPO 招股书最快本周披露</div>
+          <div class="update-desc">募资 700-750亿美元，估值 1.75-2万亿，打破沙特阿美 IPO 纪录</div>
+        </div>
+        <span class="update-date">05-18</span>
+      </div>
+      <div class="update-item warn">
+        <span class="update-icon">⚠️</span>
+        <div class="update-body">
+          <div class="update-title">治理争议：马斯克 10 倍投票权 B 类股</div>
+          <div class="update-desc">三大美国养老金联名反对，称架构"极端"；薪酬与火星殖民挂钩</div>
+        </div>
+        <span class="update-date">争议</span>
+      </div>
+      <div class="update-item new">
+        <span class="update-icon">🤖</span>
+        <div class="update-body">
+          <div class="update-title">Anthropic 估值 1.2 万亿，正式反超 OpenAI</div>
+          <div class="update-desc">今夏 IPO 募资最高 500亿，投前估值 9000亿，谷歌 2000亿长约背书</div>
+        </div>
+        <span class="update-date">05-17</span>
+      </div>
+      <div class="update-item info">
+        <span class="update-icon">💥</span>
+        <div class="update-body">
+          <div class="update-title">Cerebras 上市首日暴涨 68%，AI IPO 热潮开启</div>
+          <div class="update-desc">185美元发行，311美元收盘，募资55.5亿，市值950亿美元</div>
+        </div>
+        <span class="update-date">05-14</span>
+      </div>
+    </div>
+
+    <div class="card-divider"></div>
+    <div class="card-cta" style="margin-top:16px;">
+      <a href="ipo.html" class="btn-primary green">🚀 查看 IPO 完整进展</a>
+    </div>
+  </div>
+
+  <!-- ── Card 3: Musk vs OpenAI ── -->
+  <div class="section-card">
+    <div class="card-header">
+      <div class="card-icon pink">⚖️</div>
+      <div class="card-title-block">
+        <div class="card-num">03 · Trial Watch</div>
+        <div class="card-title">Musk VS OpenAI 世纪诉讼</div>
+        <div class="card-sub">庭审日志 · 关键证词 · 裁定影响</div>
+      </div>
+      <span class="badge badge-new">最新</span>
+    </div>
+
+    <div class="highlight-pill">
+      ⚖️ <strong>陪审团评议进行中</strong>（自 2026-05-18）&nbsp;|&nbsp; 9人陪审团，裁定为咨询性意见
+    </div>
+
+    <div class="updates-list">
+      <div class="update-item hot">
+        <span class="update-icon">🏛️</span>
+        <div class="update-body">
+          <div class="update-title">Day 14 结案陈词完成，进入陪审团评议</div>
+          <div class="update-desc">Molo：OpenAI"偷走慈善机构"；OpenAI：诉讼时效是关键，法官或直接判 OpenAI 胜诉</div>
+        </div>
+        <span class="update-date">05-15</span>
+      </div>
+      <div class="update-item new">
+        <span class="update-icon">👔</span>
+        <div class="update-body">
+          <div class="update-title">Day 13 — Sam Altman 约 4 小时证词</div>
+          <div class="update-desc">"我们被马斯克抛下，几乎被判死刑" · 否认承诺保持非营利结构 · 披露各方投资额</div>
+        </div>
+        <span class="update-date">05-13</span>
+      </div>
+      <div class="update-item info">
+        <span class="update-icon">💼</span>
+        <div class="update-body">
+          <div class="update-title">Day 9 — Satya Nadella（微软 CEO）出庭</div>
+          <div class="update-desc">微软合计投资 130亿美元，称与 OpenAI 合作"始终清晰透明"</div>
+        </div>
+        <span class="update-date">05-11</span>
+      </div>
+      <div class="update-item info">
+        <span class="update-icon">📋</span>
+        <div class="update-body">
+          <div class="update-title">马斯克索赔：最高 1340 亿美元</div>
+          <div class="update-desc">+撤销 Altman/Brockman 职务 +撤销营利化转型；判决将影响 OpenAI IPO</div>
+        </div>
+        <span class="update-date">背景</span>
+      </div>
+    </div>
+
+    <div class="card-divider"></div>
+    <div class="card-cta" style="margin-top:16px;">
+      <a href="musk-vs-openai.html" class="btn-primary pink">⚖️ 查看完整庭审日志</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- ─── Footer ─── -->
+<footer class="site-footer">
+  BHGL Musk Universe Tracker &nbsp;·&nbsp; 数据来源：CNBC · Bloomberg · 36Kr · 新浪财经 · AP News &nbsp;·&nbsp; v2.0.0 · 2026-05-18
+</footer>
+
+</body>
+</html>

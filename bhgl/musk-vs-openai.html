@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Musk VS OpenAI — 世纪庭审追踪 | BHGL</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #f093fb;
+      --secondary: #f5576c;
+      --card: rgba(255,255,255,0.05);
+      --card-border: rgba(255,255,255,0.1);
+      --text: #f0e0ff;
+      --text-muted: rgba(230,200,255,0.55);
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(135deg, #1a0a2e 0%, #16082e 40%, #2a0a3e 100%);
+      min-height: 100vh;
+      color: var(--text);
+    }
+
+    /* ── Nav ── */
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 24px;
+      background: rgba(0,0,0,0.3);
+      border-bottom: 1px solid var(--card-border);
+      backdrop-filter: blur(10px);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav a { color: rgba(220,180,255,0.6); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .nav a:hover { color: #fff; }
+    .nav .sep { color: rgba(255,255,255,0.2); }
+    .nav .current { color: var(--primary); font-weight: 600; }
+
+    /* ── Header ── */
+    .page-header {
+      text-align: center;
+      padding: 50px 20px 36px;
+      position: relative;
+    }
+    .page-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(240,147,251,0.15) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .page-header .icon { font-size: 3rem; margin-bottom: 12px; display: block; }
+    .page-header h1 {
+      font-size: 2.4rem; font-weight: 800;
+      background: linear-gradient(90deg, #f093fb, #f5576c, #ff6b81);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 8px;
+    }
+    .page-header p { color: var(--text-muted); font-size: 1rem; }
+
+    /* ── Status Banner ── */
+    .status-banner {
+      max-width: 800px;
+      margin: 0 auto 36px;
+      padding: 0 20px;
+    }
+    .status-card {
+      background: linear-gradient(135deg, rgba(240,147,251,0.1), rgba(245,87,108,0.06));
+      border: 1px solid rgba(240,147,251,0.25);
+      border-radius: 16px;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .status-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #f093fb;
+      animation: pulse 1.8s infinite;
+      flex-shrink: 0;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50% { opacity:0.3; transform:scale(0.6); }
+    }
+    .status-text { flex: 1; font-size: 0.9rem; color: var(--text-muted); }
+    .status-text strong { color: #fff; }
+    .status-right {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-align: right;
+    }
+    .status-right strong { color: var(--primary); }
+
+    /* ── Content ── */
+    .content {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* ── Overview Card ── */
+    .overview-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      padding: 24px;
+      backdrop-filter: blur(10px);
+    }
+    .overview-title {
+      font-size: 1rem; font-weight: 700; color: #fff;
+      margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+    }
+    .ov-item {
+      background: rgba(255,255,255,0.04);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+    .ov-label { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 5px; }
+    .ov-value { font-size: 0.9rem; font-weight: 600; color: #fff; line-height: 1.4; }
+    .ov-value.pink { color: #f093fb; }
+    .ov-value.red { color: #ff6b81; }
+    .ov-value.yellow { color: #ffd32a; }
+
+    /* ── Parties Card ── */
+    .parties-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+    .parties-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--card-border);
+      font-size: 1rem; font-weight: 700; color: #fff;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .parties-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0;
+    }
+    .party-block {
+      padding: 20px 24px;
+    }
+    .party-block.musk { border-right: 1px solid var(--card-border); }
+    .party-vs {
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px 10px;
+      font-size: 1.4rem; font-weight: 900;
+      color: rgba(255,255,255,0.15);
+    }
+    .party-name { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .party-lawyer { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px; }
+    .party-claims { display: flex; flex-direction: column; gap: 6px; }
+    .party-claim {
+      font-size: 0.78rem; color: var(--text-muted); line-height: 1.5;
+      padding-left: 12px; border-left: 2px solid rgba(240,147,251,0.3);
+    }
+    .party-claim.right { border-left-color: rgba(79,172,254,0.3); }
+
+    /* ── Trial Log ── */
+    .trial-log-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+    .trial-log-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--card-border);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 10px;
+    }
+    .trial-log-title { font-size: 1rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 8px; }
+    .day-count { font-size: 0.78rem; color: var(--text-muted); }
+
+    .day-list { padding: 0; }
+    .day-item {
+      padding: 20px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: background 0.2s;
+    }
+    .day-item:last-child { border-bottom: none; }
+    .day-item:hover { background: rgba(255,255,255,0.03); }
+
+    .day-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .day-badge {
+      font-size: 0.7rem; font-weight: 700; letter-spacing: 0.5px;
+      padding: 3px 10px; border-radius: 10px;
+      background: rgba(240,147,251,0.15);
+      color: #f093fb;
+      border: 1px solid rgba(240,147,251,0.25);
+    }
+    .day-badge.latest {
+      background: rgba(255,71,87,0.2);
+      color: #ff6b81;
+      border-color: rgba(255,71,87,0.3);
+    }
+    .day-date { font-size: 0.78rem; color: var(--text-muted); }
+    .day-witness {
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.5);
+    }
+
+    .day-title { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 8px; line-height: 1.4; }
+    .day-points { display: flex; flex-direction: column; gap: 6px; }
+    .day-point {
+      display: flex; gap: 8px; align-items: flex-start;
+      font-size: 0.82rem; color: var(--text-muted); line-height: 1.6;
+    }
+    .day-point::before { content: '·'; color: rgba(240,147,251,0.5); flex-shrink: 0; margin-top: 1px; }
+    .day-point strong { color: rgba(255,255,255,0.8); }
+    .day-source {
+      margin-top: 10px;
+      font-size: 0.7rem;
+      color: rgba(255,255,255,0.2);
+    }
+
+    /* ── Judgment Impact ── */
+    .impact-card {
+      background: linear-gradient(135deg, rgba(240,147,251,0.08), rgba(245,87,108,0.05));
+      border: 1px solid rgba(240,147,251,0.2);
+      border-radius: 18px;
+      padding: 24px;
+    }
+    .impact-title { font-size: 1rem; font-weight: 700; color: #fff; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+    .impact-scenarios { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; }
+    .scenario {
+      background: rgba(255,255,255,0.04);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .scenario-label {
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+      margin-bottom: 8px; padding: 3px 8px; border-radius: 6px; display: inline-block;
+    }
+    .scenario-label.musk { background: rgba(255,165,2,0.15); color: #ffd32a; }
+    .scenario-label.openai { background: rgba(79,172,254,0.15); color: #74b9ff; }
+    .scenario-title { font-size: 0.88rem; font-weight: 600; color: #fff; margin-bottom: 6px; }
+    .scenario-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.6; }
+
+    /* ── Footer ── */
+    .site-footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.18);
+      border-top: 1px solid rgba(255,255,255,0.05);
+    }
+
+    @media (max-width: 600px) {
+      .page-header h1 { font-size: 1.8rem; }
+      .parties-grid { grid-template-columns: 1fr; }
+      .party-vs { padding: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav class="nav">
+  <a href="index.html">🔭 BHGL</a>
+  <span class="sep">/</span>
+  <span class="current">⚖️ Musk VS OpenAI</span>
+</nav>
+
+<!-- ── Header ── -->
+<div class="page-header">
+  <span class="icon">⚖️</span>
+  <h1>Musk VS OpenAI</h1>
+  <p>Elon Musk v. OpenAI Inc. · 世纪诉讼完整庭审追踪</p>
+</div>
+
+<!-- ── Status Banner ── -->
+<div class="status-banner">
+  <div class="status-card">
+    <div class="status-dot"></div>
+    <div class="status-text">
+      <strong>当前状态：陪审团评议进行中</strong><br>
+      9 人陪审团（6 女 3 男）自 2026-05-18（周一）起开始评议。裁定为咨询性意见，最终由联邦法官 Yvonne Gonzalez Rogers 做出决定。
+    </div>
+    <div class="status-right">
+      庭审历时 <strong>14+ 天</strong><br>
+      截至 <strong>2026-05-15</strong>
+    </div>
+  </div>
+</div>
+
+<!-- ── Content ── -->
+<div class="content">
+
+  <!-- Overview -->
+  <div class="overview-card">
+    <div class="overview-title">📋 案件概览</div>
+    <div class="overview-grid">
+      <div class="ov-item">
+        <div class="ov-label">案件名称</div>
+        <div class="ov-value">Elon Musk v. OpenAI Inc.</div>
+      </div>
+      <div class="ov-item">
+        <div class="ov-label">法院</div>
+        <div class="ov-value">美国联邦法院（加州北区）</div>
+      </div>
+      <div class="ov-item">
+        <div class="ov-label">主审法官</div>
+        <div class="ov-value">Yvonne Gonzalez Rogers</div>
+      </div>
+      <div class="ov-item">
+        <div class="ov-label">马斯克索赔</div>
+        <div class="ov-value pink">最高 1340 亿美元</div>
+      </div>
+      <div class="ov-item">
+        <div class="ov-label">马斯克捐款</div>
+        <div class="ov-value">约 3800 万美元</div>
+      </div>
+      <div class="ov-item">
+        <div class="ov-label">其他诉求</div>
+        <div class="ov-value red">撤销 Altman/Brockman 职务 + 撤销营利化转型</div>
+      </div>
+      <div class="ov-item">
+        <div class="ov-label">核心指控</div>
+        <div class="ov-value">违背非营利使命，捐款被用于未经授权的商业目的</div>
+      </div>
+      <div class="ov-item">
+        <div class="ov-label">关键风险</div>
+        <div class="ov-value yellow">判决将影响 OpenAI IPO 计划</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Parties -->
+  <div class="parties-card">
+    <div class="parties-header">⚔️ 双方立场</div>
+    <div class="parties-grid">
+      <div class="party-block musk">
+        <div class="party-name">🅜 马斯克方（原告）</div>
+        <div class="party-lawyer">首席律师：Steve Molo（Steven Molo）</div>
+        <div class="party-claims">
+          <div class="party-claim">OpenAI 违背非营利使命，"偷走了一家慈善机构"</div>
+          <div class="party-claim">捐款约 3800 万美元被用于未经授权的商业目的</div>
+          <div class="party-claim">Altman、Brockman 和微软以牺牲马斯克利益为代价中饱私囊</div>
+          <div class="party-claim">OpenAI 未能开源技术、未优先考虑 AI 安全</div>
+          <div class="party-claim">索赔最高 1340 亿美元 + 撤职 + 撤销营利化</div>
+        </div>
+      </div>
+      <div class="party-vs">VS</div>
+      <div class="party-block">
+        <div class="party-name">🅞 OpenAI 方（被告）</div>
+        <div class="party-lawyer">首席律师：Sarah Eddy &amp; William Savitt</div>
+        <div class="party-claims">
+          <div class="party-claim right">马斯克真正动机是为 xAI 获取竞争优势</div>
+          <div class="party-claim right">马斯克等待太久才提起诉讼，相关主张应被驳回（诉讼时效）</div>
+          <div class="party-claim right">马斯克本身从事着他所批评的同类行为（xAI 商业化 AI）</div>
+          <div class="party-claim right">从未承诺 OpenAI 将永远保持非营利结构</div>
+          <div class="party-claim right">营利化转型是为了筹集必要资金，符合使命</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trial Log -->
+  <div class="trial-log-card">
+    <div class="trial-log-header">
+      <div class="trial-log-title">🏛️ 庭审日志（倒叙：最新在前）</div>
+      <div class="day-count">共记录 9 个庭审日</div>
+    </div>
+
+    <div class="day-list">
+
+      <!-- Day 14 -->
+      <div class="day-item">
+        <div class="day-meta">
+          <span class="day-badge latest">Day 14 · 最新</span>
+          <span class="day-date">2026-05-15（周四）</span>
+          <span class="day-witness">双方律师结案陈词</span>
+        </div>
+        <div class="day-title">结案陈词完成，庭审正式进入陪审团评议阶段</div>
+        <div class="day-points">
+          <div class="day-point">Musk 律师 Steve Molo 强调：OpenAI 违背非营利使命、马斯克捐款被用于未经授权的商业目的，OpenAI"偷走了一家慈善机构"</div>
+          <div class="day-point">OpenAI 律师反驳：<strong>诉讼时效问题是关键</strong>——若陪审团认定 Musk 超期起诉（2021年8月前的损害已过时效），法官极有可能直接判 OpenAI 胜诉</div>
+          <div class="day-point">法官书面裁定："若陪审团认为 Musk 未能在诉讼时效内起诉，法院极有可能接受该认定并直接裁定被告胜诉"</div>
+          <div class="day-point"><strong>案件意义：</strong>判决结果将影响 OpenAI IPO 计划，若 Musk 胜诉可能导致 OpenAI 上市受阻</div>
+          <div class="day-point">9 人陪审团（6 女 3 男）于 2026-05-18（周一）开始评议，裁定为咨询性意见</div>
+        </div>
+        <div class="day-source">来源：AP News · TechXplore（2026-05-15）</div>
+      </div>
+
+      <!-- Day 13 / Day 11 -->
+      <div class="day-item">
+        <div class="day-meta">
+          <span class="day-badge">Day 13 &amp; 11</span>
+          <span class="day-date">2026-05-13（周二/周三）</span>
+          <span class="day-witness">Sam Altman（OpenAI CEO）</span>
+        </div>
+        <div class="day-title">Sam Altman 出庭约 4 小时 — "被马斯克抛下"</div>
+        <div class="day-points">
+          <div class="day-point">核心主张："我们被马斯克抛下，几乎被判死刑"（"We were kind of left for dead"），将此视为前行动力</div>
+          <div class="day-point">明确否认曾向马斯克做出任何关于保持非营利结构的承诺</div>
+          <div class="day-point">关键财务披露：<strong>Amazon（$500亿）> SoftBank（$300亿）= Nvidia（$300亿）> 微软（$130亿）</strong>，Altman 起初记错后被追问承认</div>
+          <div class="day-point">称马斯克的管理方式让部分研究员"士气低落"，其离开对某些员工反而是"士气提振"</div>
+          <div class="day-point">Altman 身着蓝色西装，态度相对平和，未出现马斯克式的激烈对抗</div>
+          <div class="day-point">庭审结束时陪审团观看了 Sam Teller（Musk 前助理）的视频证词录像</div>
+        </div>
+        <div class="day-source">来源：CNBC（2026-05-12/13）</div>
+      </div>
+
+      <!-- Day 9 -->
+      <div class="day-item">
+        <div class="day-meta">
+          <span class="day-badge">Day 9</span>
+          <span class="day-date">2026-05-11（周一）</span>
+          <span class="day-witness">Satya Nadella（微软 CEO）</span>
+        </div>
+        <div class="day-title">微软 CEO 出庭 — "没有其他人愿意押注"</div>
+        <div class="day-points">
+          <div class="day-point">Nadella 身穿深蓝色西装，作证数小时</div>
+          <div class="day-point">核心主张：Musk 从未就微软投资 OpenAI 一事直接向他提出过任何异议或担忧</div>
+          <div class="day-point">微软投资历程：2019 年 $10亿、2021 年 $20亿、2023 年 $100亿，合计逾 <strong>$130亿</strong></div>
+          <div class="day-point">他表示微软投资始终包含明确商业目的，不认为这些是捐款</div>
+          <div class="day-point">对 Musk 指控微软共谋违背慈善信托：否认，称双方合作协议一直"清晰透明"</div>
+        </div>
+        <div class="day-source">来源：CNBC（2026-05-11）</div>
+      </div>
+
+      <!-- Day 7 -->
+      <div class="day-item">
+        <div class="day-meta">
+          <span class="day-badge">Day 7</span>
+          <span class="day-date">2026-05-07（周三）</span>
+          <span class="day-witness">Shivon Zilis（前 OpenAI 董事会成员）</span>
+        </div>
+        <div class="day-title">前董事会成员、Musk 前高级顾问出庭</div>
+        <div class="day-points">
+          <div class="day-point">Zilis 全黑着装上台，作为前 OpenAI 董事会成员（2020-2023 年），与马斯克育有 4 个孩子</div>
+          <div class="day-point">她于 2023 年投票批准微软 $100 亿投资协议及向 OpenAI 授予更多 IP 权利的条款——此协议是被告违反慈善信托的核心证据之一</div>
+          <div class="day-point">详细阐述了 2017 年 8-9 月 OpenAI 创始人讨论融资结构的关键六周经过</div>
+          <div class="day-point">介绍了自己在 OpenAI 早期的无薪顾问角色（每周 10 小时），后加入 SpaceX、Neuralink、Tesla（每周 80-100 小时）</div>
+        </div>
+        <div class="day-source">来源：ABC7 News（2026-05-07）</div>
+      </div>
+
+      <!-- Day 5 -->
+      <div class="day-item">
+        <div class="day-meta">
+          <span class="day-badge">Day 5</span>
+          <span class="day-date">2026-05-09（周五）</span>
+          <span class="day-witness">Greg Brockman（OpenAI 联合创始人兼总裁）</span>
+        </div>
+        <div class="day-title">联合创始人连续两日出庭 — 日记成辩论焦点</div>
+        <div class="day-points">
+          <div class="day-point">Brockman 2017 年前后的<strong>个人日记</strong>被提交为庭审证据，成辩论焦点</div>
+          <div class="day-point">日记显示：Brockman 和 Ilya Sutskever 曾讨论计划与 Musk 分道扬镳</div>
+          <div class="day-point">马斯克方认为此证明 OpenAI 内部人士早有"背叛"计划</div>
+        </div>
+        <div class="day-source">来源：财新网（2026-05-09）</div>
+      </div>
+
+      <!-- Musk 本人 -->
+      <div class="day-item">
+        <div class="day-meta">
+          <span class="day-badge">Day 1-3</span>
+          <span class="day-date">2026-04-28 ~ 2026-04-30</span>
+          <span class="day-witness">Elon Musk（原告本人）</span>
+        </div>
+        <div class="day-title">马斯克亲上证人席 — 激烈对抗式陈词</div>
+        <div class="day-points">
+          <div class="day-point">马斯克强调创立 OpenAI 的初衷：对人类有益的安全 AI、开源研究、非营利结构是核心承诺</div>
+          <div class="day-point">指控 Altman 和 Brockman 违背这些承诺，将 OpenAI 变为 Microsoft 的附属商业公司</div>
+          <div class="day-point">交叉质询中与 OpenAI 律师多次正面交锋，语气强硬、多次情绪激动</div>
+          <div class="day-point">法官多次提醒马斯克遵守庭审礼仪，保持陈述简洁</div>
+        </div>
+        <div class="day-source">来源：CNBC · Bloomberg Law（2026-04-28-30）</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Judgment Impact -->
+  <div class="impact-card">
+    <div class="impact-title">🔮 判决走向与影响</div>
+    <div class="impact-scenarios">
+      <div class="scenario">
+        <span class="scenario-label musk">情景 A：马斯克胜诉</span>
+        <div class="scenario-title">OpenAI 营利化转型被撤销</div>
+        <div class="scenario-desc">马斯克获高额赔偿；Altman / Brockman 被撤职；OpenAI IPO 计划受阻甚至取消；AI 行业非营利架构争议重燃</div>
+      </div>
+      <div class="scenario">
+        <span class="scenario-label openai">情景 B：OpenAI 胜诉（最可能）</span>
+        <div class="scenario-title">法官直接裁定被告胜诉</div>
+        <div class="scenario-desc">若陪审团认定 Musk 超过诉讼时效，法官极有可能据此直接裁定 OpenAI 胜诉；OpenAI IPO 路障移除，市场影响正面</div>
+      </div>
+      <div class="scenario">
+        <span class="scenario-label" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);">情景 C：庭外和解</span>
+        <div class="scenario-title">双方达成保密协议</div>
+        <div class="scenario-desc">若在陪审团裁定前达成和解，双方可能在不公开具体条款的情况下私下解决，马斯克 xAI 可能获得 OpenAI 某些授权</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  BHGL Musk VS OpenAI Trial Tracker &nbsp;·&nbsp; 来源：CNBC · Bloomberg Law · AP News · ABC7 · 财新网 &nbsp;·&nbsp; 更新：2026-05-18
+</footer>
+
+</body>
+</html>
