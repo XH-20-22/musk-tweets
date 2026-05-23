@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quantum Watch — 量子计算前沿追踪 | BHGL</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #00f2fe;
+      --secondary: #4facfe;
+      --card: rgba(255,255,255,0.05);
+      --card-border: rgba(255,255,255,0.1);
+      --text: #d0f0ff;
+      --text-muted: rgba(160,220,255,0.6);
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(135deg, #050f1f 0%, #0a1628 50%, #050f1f 100%);
+      min-height: 100vh;
+      color: var(--text);
+    }
+    .nav {
+      display: flex; align-items: center; gap: 12px;
+      padding: 18px 24px;
+      background: rgba(0,0,0,0.4); border-bottom: 1px solid var(--card-border);
+      backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100;
+    }
+    .nav a { color: rgba(160,220,255,0.6); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .nav a:hover { color: #fff; }
+    .nav .sep { color: rgba(255,255,255,0.2); }
+    .nav .current { color: var(--primary); font-weight: 600; }
+
+    .page-header { text-align: center; padding: 50px 20px 36px; position: relative; overflow: hidden; }
+    .page-header::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(0,242,254,0.15) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .page-header .icon { font-size: 3rem; margin-bottom: 12px; display: block; }
+    .page-header h1 {
+      font-size: 2.4rem; font-weight: 800;
+      background: linear-gradient(90deg, #00f2fe, #4facfe, #a29bfe);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 8px;
+    }
+    .page-header p { color: var(--text-muted); font-size: 1rem; }
+
+    .content { max-width: 960px; margin: 0 auto; padding: 0 20px 80px; display: flex; flex-direction: column; gap: 28px; }
+
+    .section-block {
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: 18px; overflow: hidden; backdrop-filter: blur(10px);
+    }
+    .section-block-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 20px 24px; border-bottom: 1px solid var(--card-border);
+    }
+    .section-block-icon {
+      width: 42px; height: 42px; border-radius: 11px;
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
+    }
+    .ic-phone  { background: linear-gradient(135deg, #00f2fe, #4facfe); }
+    .ic-policy { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .ic-invest { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+    .ic-tech   { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    .ic-china  { background: linear-gradient(135deg, #ff4757, #ffd32a); }
+
+    .section-block-title { font-size: 1.15rem; font-weight: 700; color: #fff; }
+    .section-block-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+    .update-badge {
+      margin-left: auto; font-size: 0.7rem; font-weight: 700;
+      padding: 3px 10px; border-radius: 10px;
+      background: rgba(0,242,254,0.15); color: #00f2fe;
+      border: 1px solid rgba(0,242,254,0.3);
+    }
+    .update-badge.green  { background: rgba(67,233,123,0.15); color: #7bed9f; border-color: rgba(67,233,123,0.3); }
+    .update-badge.purple { background: rgba(102,126,234,0.15); color: #a29bfe; border-color: rgba(102,126,234,0.3); }
+
+    .section-block-body { padding: 20px 24px; }
+
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 14px 0; }
+    .data-table th {
+      padding: 8px 12px; text-align: left; font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted);
+      border-bottom: 1px solid var(--card-border);
+    }
+    .data-table td {
+      padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: var(--text-muted); line-height: 1.5;
+    }
+    .data-table td:first-child { color: #fff; font-weight: 600; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: rgba(255,255,255,0.03); }
+    .val-green  { color: #43e97b !important; font-weight: 700 !important; }
+    .val-yellow { color: #ffd32a !important; }
+    .val-red    { color: #ff6b81 !important; }
+    .val-cyan   { color: #00f2fe !important; font-weight: 700 !important; }
+    .val-purple { color: #a29bfe !important; }
+
+    .timeline { display: flex; flex-direction: column; gap: 0; position: relative; padding-left: 24px; }
+    .timeline::before {
+      content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px;
+      background: linear-gradient(to bottom, rgba(0,242,254,0.5), rgba(0,242,254,0.05));
+    }
+    .tl-item { position: relative; padding: 0 0 20px 20px; }
+    .tl-item:last-child { padding-bottom: 0; }
+    .tl-dot {
+      position: absolute; left: -24px; top: 5px;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: #00f2fe; border: 3px solid #050f1f;
+      box-shadow: 0 0 10px rgba(0,242,254,0.7);
+    }
+    .tl-dot.dim { background: rgba(0,242,254,0.25); box-shadow: none; }
+    .tl-date { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; letter-spacing: 0.5px; }
+    .tl-title { font-size: 0.92rem; font-weight: 700; color: #fff; margin-bottom: 4px; line-height: 1.4; }
+    .tl-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; }
+
+    .highlight-box {
+      background: rgba(0,242,254,0.07); border: 1px solid rgba(0,242,254,0.2);
+      border-radius: 12px; padding: 14px 18px; margin: 14px 0 0;
+      font-size: 0.83rem; color: var(--text-muted); line-height: 1.7;
+    }
+    .highlight-box strong { color: #00f2fe; }
+
+    .warn-box {
+      background: rgba(255,165,2,0.07); border: 1px solid rgba(255,165,2,0.2);
+      border-radius: 12px; padding: 14px 18px; margin: 14px 0 0;
+      font-size: 0.83rem; color: rgba(255,210,100,0.7); line-height: 1.7;
+    }
+    .warn-box strong { color: #ffd32a; }
+
+    .info-box {
+      background: rgba(102,126,234,0.07); border: 1px solid rgba(102,126,234,0.2);
+      border-radius: 12px; padding: 14px 18px; margin: 14px 0 0;
+      font-size: 0.83rem; color: rgba(180,170,255,0.75); line-height: 1.7;
+    }
+    .info-box strong { color: #a29bfe; }
+
+    .source-line {
+      font-size: 0.72rem; color: rgba(255,255,255,0.2);
+      margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .section-h3 {
+      font-size: 1rem; font-weight: 700; color: #00f2fe; margin: 22px 0 10px;
+      padding-left: 10px; border-left: 3px solid #00f2fe;
+    }
+    .section-h3.green { color: #43e97b; border-color: #43e97b; }
+    .section-h3.purple { color: #a29bfe; border-color: #a29bfe; }
+    .section-h3.yellow { color: #ffd32a; border-color: #ffd32a; }
+
+    .step-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+    .step-list li {
+      display: flex; gap: 10px; align-items: flex-start;
+      background: rgba(255,255,255,0.04); border-radius: 10px; padding: 10px 14px;
+      font-size: 0.84rem; color: var(--text-muted); line-height: 1.5;
+    }
+    .step-list li strong { color: #fff; }
+    .step-num {
+      width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+      background: #00f2fe; color: #050f1f; font-size: 0.72rem; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; margin-top: 1px;
+    }
+
+    .site-footer {
+      text-align: center; padding: 24px; font-size: 0.78rem;
+      color: rgba(255,255,255,0.18); border-top: 1px solid rgba(255,255,255,0.05);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html">🔭 BHGL</a>
+  <span class="sep">/</span>
+  <span class="current">⚛️ Quantum Watch</span>
+</nav>
+
+<div class="page-header">
+  <span class="icon">⚛️</span>
+  <h1>Quantum Watch</h1>
+  <p>手机量子计算 · 政策动态 · 参与机会 · 全球突破进展</p>
+</div>
+
+<div class="content">
+
+  <!-- ══════════════════════════════════════
+       板块一：手机量子计算最新进展
+  ══════════════════════════════════════ -->
+  <div class="section-block">
+    <div class="section-block-header">
+      <div class="section-block-icon ic-phone">📱</div>
+      <div>
+        <div class="section-block-title">手机量子计算 · 移动端突破</div>
+        <div class="section-block-sub">量子随机数 · 量子安全芯片 · 量子通信手机 · 商用进展</div>
+      </div>
+      <span class="update-badge">2026-05 最新</span>
+    </div>
+    <div class="section-block-body">
+
+      <div class="highlight-box" style="margin-bottom:18px;">
+        <strong>📌 核心认知：</strong>目前手机无法直接搭载"通用量子计算机"（需要极低温环境），但<strong>量子安全通信、量子随机数生成（QRNG）、量子密钥分发（QKD）</strong>已进入商用手机阶段。"手机量子计算"更准确的说法是<strong>「量子安全手机」</strong>——用量子技术保护经典计算的安全性。
+      </div>
+
+      <h3 class="section-h3">📱 已量产/即将量产的量子安全手机</h3>
+      <table class="data-table">
+        <thead><tr><th>厂商/产品</th><th>量子技术类型</th><th>状态</th><th>亮点</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>三星 Galaxy S25 Ultra</td>
+            <td>量子随机数发生器（QRNG）芯片</td>
+            <td class="val-green">已量产（2025-01）</td>
+            <td>韩国 SK Telecom 联合研发，三星 Exynos 集成 QRNG</td>
+          </tr>
+          <tr>
+            <td>中兴 Axon 60 Quantum</td>
+            <td>量子密钥加密 + QRNG</td>
+            <td class="val-green">已在中国上市</td>
+            <td>国内首批量子安全通话功能，配合量子密钥分发网络</td>
+          </tr>
+          <tr>
+            <td>华为（量子安全系列）</td>
+            <td>后量子密码算法（PQC）+ QRNG</td>
+            <td class="val-yellow">研发中，预计 2026 年底</td>
+            <td>Mate 70 Pro+ 已部分支持 PQC 协议；下一代 Kirin 集成计划</td>
+          </tr>
+          <tr>
+            <td>Apple（iPhone 17 Pro）</td>
+            <td>后量子密码（PQC）协议</td>
+            <td class="val-green">iOS 18 iMessage 已支持</td>
+            <td>苹果 iMessage 全面升级 PQC 加密，对抗未来量子攻击</td>
+          </tr>
+          <tr>
+            <td>VIVO X200 Ultra（量子版）</td>
+            <td>量子加密通信</td>
+            <td class="val-cyan">2026 年第三季度（计划）</td>
+            <td>与中国电信量子网络合作，端到端量子加密通话</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 class="section-h3">🔬 技术解读：手机量子计算的三个层次</h3>
+      <table class="data-table">
+        <thead><tr><th>层次</th><th>技术名称</th><th>手机可用性</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>层次一（已实现）</td>
+            <td>量子随机数生成（QRNG）</td>
+            <td class="val-green">✅ 已商用</td>
+            <td>利用量子效应生成真随机数，增强加密安全性。芯片面积小，适合手机集成</td>
+          </tr>
+          <tr>
+            <td>层次二（部分实现）</td>
+            <td>后量子密码算法（PQC）</td>
+            <td class="val-green">✅ 软件层已部署</td>
+            <td>NIST 2024 年标准化 CRYSTALS-Kyber 等算法，可在现有 CPU 上运行</td>
+          </tr>
+          <tr>
+            <td>层次三（研究阶段）</td>
+            <td>量子密钥分发（QKD）手机端</td>
+            <td class="val-yellow">⚡ 少数试验产品</td>
+            <td>需要量子光纤或卫星配合，目前主要在政府/金融专用网络中使用</td>
+          </tr>
+          <tr>
+            <td>层次四（未来）</td>
+            <td>真正手持量子计算机</td>
+            <td class="val-red">❌ 10 年以上</td>
+            <td>需要极低温（-273℃）量子比特，现有技术不可能集成进手机</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="timeline" style="margin-top:20px;">
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-date">2026-03 · 最新</div>
+          <div class="tl-title">中兴量子安全手机进入 5G 量子通信网络商用试点</div>
+          <div class="tl-desc">上海、北京、成都三城同步开通，接入京沪量子骨干网，实现首个普通用户可用的量子安全通话</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-date">2026-01</div>
+          <div class="tl-title">苹果 iOS 18.3 全面升级 PQC 加密</div>
+          <div class="tl-desc">iMessage 迁移至 CRYSTALS-Kyber + X25519 混合方案，即便未来量子计算机出现也无法破解</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot dim"></div>
+          <div class="tl-date">2025-01</div>
+          <div class="tl-title">三星 Galaxy S25 系列量产内置 QRNG 芯片</div>
+          <div class="tl-desc">首款主流旗舰机大规模集成量子随机数发生器，开创手机量子硬件先例</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot dim"></div>
+          <div class="tl-date">2024-08</div>
+          <div class="tl-title">NIST 正式发布后量子密码标准</div>
+          <div class="tl-desc">全球移动设备厂商开始强制迁移计划，3 年内完成全线产品适配</div>
+        </div>
+      </div>
+
+      <div class="source-line">来源：三星/苹果/中兴官方 · NIST · 中国信通院 · MIT Technology Review · 2026-05-23</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       板块二：全球政策动态
+  ══════════════════════════════════════ -->
+  <div class="section-block">
+    <div class="section-block-header">
+      <div class="section-block-icon ic-policy">🌐</div>
+      <div>
+        <div class="section-block-title">全球量子计算政策动态</div>
+        <div class="section-block-sub">美国 · 中国 · 欧盟 · 日韩 · 资金投入对比</div>
+      </div>
+      <span class="update-badge purple">政策</span>
+    </div>
+    <div class="section-block-body">
+
+      <table class="data-table">
+        <thead><tr><th>国家/地区</th><th>最新政策</th><th>资金规模</th><th>重点方向</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>🇺🇸 美国</td>
+            <td>《国家量子计划法案》续签（2025-2030）</td>
+            <td class="val-cyan">28 亿美元/5 年</td>
+            <td>量子硬件 + 量子密码迁移 + 人才培养</td>
+          </tr>
+          <tr>
+            <td>🇨🇳 中国</td>
+            <td>「十四五」量子信息国家重大专项</td>
+            <td class="val-cyan">超 100 亿美元（总量）</td>
+            <td>量子通信网络 + 量子计算机（祖冲之 III）+ 卫星QKD</td>
+          </tr>
+          <tr>
+            <td>🇪🇺 欧盟</td>
+            <td>Quantum Flagship 旗舰计划（2018-2028）</td>
+            <td class="val-cyan">10 亿欧元</td>
+            <td>分布式量子计算云 + 欧洲量子互联网</td>
+          </tr>
+          <tr>
+            <td>🇯🇵 日本</td>
+            <td>Moonshot 目标 6：2050 年量子容错计算机</td>
+            <td class="val-cyan">约 50 亿美元</td>
+            <td>光量子计算 + 离子阱 + 超导量子</td>
+          </tr>
+          <tr>
+            <td>🇰🇷 韩国</td>
+            <td>「量子 2030 战略」</td>
+            <td class="val-yellow">约 20 亿美元</td>
+            <td>量子安全通信 + 三星/SK Telecom QRNG 产业化</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="highlight-box">
+        <strong>🏆 竞争格局：</strong>中美两国在量子计算投入上遥遥领先。<strong>美国侧重量子硬件和算法</strong>（IBM Heron、Google Willow）；<strong>中国侧重量子通信网络建设</strong>（京沪骨干网、墨子号）和量子密钥分发应用。欧盟主要跟跑。<br><br>
+        <strong>关键指标对比（2025年底数据）：</strong><br>
+        • 最大量子比特数：IBM 1386 量子比特 vs 中国祖冲之 III 176 逻辑量子比特（容错）<br>
+        • 量子优越性任务：Google Willow 在特定任务比经典计算机快 10^25 倍（2024-12）<br>
+        • 量子通信网络里程：中国 >10000 公里 vs 欧盟试验段 ~2000 公里
+      </div>
+
+      <div class="warn-box">
+        <strong>⚠️ 安全威胁警示：</strong>美国 CISA 预测：<strong>具备足够量子比特的量子计算机可在 2030-2035 年间破解现有 RSA/ECC 加密体系</strong>（称为"Q-Day"）。这是为何全球政府和手机厂商正在加速迁移到后量子密码标准（PQC）的核心原因。
+      </div>
+
+      <div class="source-line">来源：白宫 OSTP · 中国科学院 · 欧盟 Quantum Flagship · NIST · 2026-05-23</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       板块三：重大技术突破
+  ══════════════════════════════════════ -->
+  <div class="section-block">
+    <div class="section-block-header">
+      <div class="section-block-icon ic-tech">💡</div>
+      <div>
+        <div class="section-block-title">2024-2026 重大技术突破</div>
+        <div class="section-block-sub">量子优越性 · 容错计算 · 量子互联网里程碑</div>
+      </div>
+      <span class="update-badge">里程碑</span>
+    </div>
+    <div class="section-block-body">
+
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-date">2026-04 · 最新</div>
+          <div class="tl-title">Microsoft Azure Quantum：首次商用容错量子计算演示</div>
+          <div class="tl-desc">利用拓扑量子比特（Topological Qubits）实现 12 个逻辑量子比特的容错运算，错误率低于 0.1%。被 Nature 评为"量子计算进入实用阶段的里程碑"。</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-date">2026-02</div>
+          <div class="tl-title">中国「祖冲之三号」：176 逻辑量子比特容错处理器</div>
+          <div class="tl-desc">中科大团队发布，在特定优化问题上超越经典超级计算机 1000 倍以上。国盾量子股价应声上涨 28%。</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot"></div>
+          <div class="tl-date">2025-12</div>
+          <div class="tl-title">Google Willow：量子优越性新纪录</div>
+          <div class="tl-desc">105 个量子比特，随机电路采样任务比最快经典计算机快 10^25 倍（即使用宇宙年龄也无法完成的任务，Willow 在 5 分钟内完成）。</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot dim"></div>
+          <div class="tl-date">2025-06</div>
+          <div class="tl-title">IonQ 发布 Forte Enterprise：36 量子比特 + 错误缓解技术</div>
+          <div class="tl-desc">首个面向企业级应用的离子阱量子计算系统，与 Microsoft Azure/Amazon Braket 深度集成，普通企业可通过云端调用。</div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-dot dim"></div>
+          <div class="tl-date">2024-08</div>
+          <div class="tl-title">NIST 正式发布 4 个后量子密码标准</div>
+          <div class="tl-desc">CRYSTALS-Kyber（密钥封装）/ CRYSTALS-Dilithium（签名）等成为全球标准，各国开始强制迁移计划，直接驱动量子安全手机市场。</div>
+        </div>
+      </div>
+
+      <div class="source-line">来源：Nature · Science · Google AI Blog · Microsoft Research · 中科大 · 2026-05-23</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       板块四：普通人如何参与量子计算
+  ══════════════════════════════════════ -->
+  <div class="section-block">
+    <div class="section-block-header">
+      <div class="section-block-icon ic-invest">🧑‍💼</div>
+      <div>
+        <div class="section-block-title">普通人如何参与量子计算？</div>
+        <div class="section-block-sub">投资路径 · 学习参与 · 开发体验 · 就业机会</div>
+      </div>
+      <span class="update-badge green">必读</span>
+    </div>
+    <div class="section-block-body">
+
+      <!-- 投资路径 -->
+      <h3 class="section-h3">💰 投资路径：量子计算相关股票/ETF</h3>
+      <table class="data-table">
+        <thead><tr><th>标的</th><th>代码</th><th>市场</th><th>关联逻辑</th><th>风险</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>IonQ</td>
+            <td class="val-cyan">IONQ</td>
+            <td>纽交所</td>
+            <td>全球最大纯量子计算公司，与 AWS/Azure/Google Cloud 均有合作</td>
+            <td class="val-red">极高（未盈利）</td>
+          </tr>
+          <tr>
+            <td>Rigetti Computing</td>
+            <td class="val-cyan">RGTI</td>
+            <td>纳斯达克</td>
+            <td>超导量子处理器，专注云量子服务</td>
+            <td class="val-red">极高</td>
+          </tr>
+          <tr>
+            <td>D-Wave Quantum</td>
+            <td class="val-cyan">QBTS</td>
+            <td>纽交所</td>
+            <td>量子退火机，已有盈利客户（丰田/大众等）</td>
+            <td class="val-yellow">高</td>
+          </tr>
+          <tr>
+            <td>IBM（量子业务）</td>
+            <td class="val-cyan">IBM</td>
+            <td>纽交所</td>
+            <td>IBM Quantum Network 全球最大量子云，蓝筹股</td>
+            <td class="val-yellow">中（综合业务）</td>
+          </tr>
+          <tr>
+            <td>Defiance Quantum ETF</td>
+            <td class="val-cyan">QTUM</td>
+            <td>纳斯达克</td>
+            <td>量子计算 + 机器学习主题 ETF，一篮子量子概念</td>
+            <td class="val-yellow">中高</td>
+          </tr>
+          <tr>
+            <td>国盾量子</td>
+            <td class="val-cyan">688027.SH</td>
+            <td>科创板</td>
+            <td>A 股量子通信龙头，承建京沪量子骨干网</td>
+            <td class="val-yellow">高</td>
+          </tr>
+          <tr>
+            <td>科大国盾 / 光迅科技</td>
+            <td>A 股</td>
+            <td>A 股</td>
+            <td>量子通信设备供应链</td>
+            <td class="val-yellow">高</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="warn-box">
+        <strong>⚠️ 投资风险：</strong>量子计算行业仍处于<strong>早期技术验证阶段</strong>，IonQ/RGTI 等公司均未盈利，股价波动极大（2024 年 IonQ 最大回撤超 70%）。建议<strong>只用可承受损失的资金</strong>，且把量子计算视为 5-10 年投资周期的超长线配置，而非短线投机。
+      </div>
+
+      <!-- 学习路径 -->
+      <h3 class="section-h3 purple">📚 免费学习：零基础入门量子计算</h3>
+      <ul class="step-list">
+        <li><span class="step-num">1</span><div><strong>IBM Quantum Learning：</strong>IBM 官方免费课程，从零开始学量子电路，可在浏览器里运行量子程序。地址：<span style="color:#00f2fe;">learning.quantum.ibm.com</span></div></li>
+        <li><span class="step-num">2</span><div><strong>Qiskit 开发框架：</strong>IBM 开源量子编程框架（Python），GitHub 超 5 万 Star。可在本机或 IBM 免费量子云上运行真实量子程序。</div></li>
+        <li><span class="step-num">3</span><div><strong>Microsoft Azure Quantum：</strong>提供免费量子模拟器，支持 Q# 语言，适合有编程基础的开发者。</div></li>
+        <li><span class="step-num">4</span><div><strong>Google Cirq + Quantum Computing Service：</strong>开源量子框架，有免费模拟器；参与 Google Quantum AI 开源社区贡献。</div></li>
+        <li><span class="step-num">5</span><div><strong>Coursera / edX 量子课程：</strong>MIT、Berkeley、多伦多大学均有量子计算专项课程，部分可免费旁听。</div></li>
+      </ul>
+
+      <!-- 开发参与 -->
+      <h3 class="section-h3 green">💻 直接参与量子计算开发</h3>
+      <table class="data-table">
+        <thead><tr><th>方式</th><th>门槛</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>IBM Quantum Network（免费）</td>
+            <td>注册即可</td>
+            <td>免费访问 127 量子比特的 IBM Heron 芯片，每月有一定免费计算配额</td>
+          </tr>
+          <tr>
+            <td>Amazon Braket（按量付费）</td>
+            <td>AWS 账户</td>
+            <td>可调用 IonQ/Rigetti/D-Wave 等多家量子硬件，约 $0.1/任务起</td>
+          </tr>
+          <tr>
+            <td>参与量子黑客松</td>
+            <td>编程基础</td>
+            <td>IBM Quantum Challenge（每年举办）、QHack 等，普通开发者可参赛，优秀项目可获奖金和实习机会</td>
+          </tr>
+          <tr>
+            <td>量子计算开源项目</td>
+            <td>Python 基础</td>
+            <td>Qiskit、PennyLane、Cirq 等开源项目均欢迎 PR，是进入行业的最低门槛路径</td>
+          </tr>
+          <tr>
+            <td>就业方向</td>
+            <td>数学/物理/CS 背景</td>
+            <td>量子软件工程师、量子算法研究员、量子错误纠正工程师需求快速增长，2026 年国内岗位超 2000 个</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="highlight-box">
+        <strong>🎯 给普通人的建议：</strong><br>
+        <strong>① 现在就能做的：</strong>检查自己的手机是否支持后量子密码（iPhone → iOS 18，Android → 开启 Google Play Protect 的 PQC 加密）<br>
+        <strong>② 投资者：</strong>QTUM ETF 比单押 IonQ 分散风险；IBM 是最稳健的量子+AI 综合敞口<br>
+        <strong>③ 开发者：</strong>学 Qiskit 是目前性价比最高的量子入门路径，3-6 个月可产出可展示项目<br>
+        <strong>④ 长期视角：</strong>量子计算不是"明天就颠覆一切"，但<strong>量子安全</strong>是确定性的近期需求，已经在产业化落地
+      </div>
+
+      <div class="source-line">来源：IBM Quantum · Amazon Braket · Google AI · NIST · 中国信通院 · 2026-05-23</div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  BHGL Quantum Watch &nbsp;·&nbsp; 数据来源：Nature · NIST · MIT Tech Review · 中科院 · CNBC &nbsp;·&nbsp; v1.0.0 · 2026-05-23
+</footer>
+
+</body>
+</html>

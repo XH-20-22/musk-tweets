@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Musk Tracker — 马斯克全方位追踪 | BHGL</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #4facfe;
+      --secondary: #00f2fe;
+      --card: rgba(255,255,255,0.05);
+      --card-border: rgba(255,255,255,0.1);
+      --text: #e0f0ff;
+      --text-muted: rgba(180,220,255,0.6);
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(135deg, #0a1628 0%, #0d1f35 50%, #0a1628 100%);
+      min-height: 100vh;
+      color: var(--text);
+    }
+    .nav {
+      display: flex; align-items: center; gap: 12px;
+      padding: 18px 24px;
+      background: rgba(0,0,0,0.3); border-bottom: 1px solid var(--card-border);
+      backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100;
+    }
+    .nav a { color: rgba(180,220,255,0.6); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .nav a:hover { color: #fff; }
+    .nav .sep { color: rgba(255,255,255,0.2); }
+    .nav .current { color: var(--primary); font-weight: 600; }
+
+    .page-header { text-align: center; padding: 50px 20px 36px; position: relative; }
+    .page-header::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(79,172,254,0.18) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .page-header .icon { font-size: 3rem; margin-bottom: 12px; display: block; }
+    .page-header h1 {
+      font-size: 2.4rem; font-weight: 800;
+      background: linear-gradient(90deg, #4facfe, #00f2fe, #667eea);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 8px;
+    }
+    .page-header p { color: var(--text-muted); font-size: 1rem; }
+
+    .content { max-width: 960px; margin: 0 auto; padding: 0 20px 80px; display: flex; flex-direction: column; gap: 28px; }
+
+    .section-block {
+      background: var(--card); border: 1px solid var(--card-border);
+      border-radius: 18px; overflow: hidden; backdrop-filter: blur(10px);
+    }
+    .section-block-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 20px 24px; border-bottom: 1px solid var(--card-border);
+    }
+    .section-block-icon {
+      width: 42px; height: 42px; border-radius: 11px;
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
+    }
+    .ic-tweet    { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+    .ic-media    { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    .ic-invest   { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+    .ic-politics { background: linear-gradient(135deg, #ffd32a, #ff9f1a); }
+    .ic-activity { background: linear-gradient(135deg, #667eea, #764ba2); }
+
+    .section-block-title { font-size: 1.15rem; font-weight: 700; color: #fff; }
+    .section-block-sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+    .update-badge {
+      margin-left: auto; font-size: 0.7rem; font-weight: 700;
+      padding: 3px 10px; border-radius: 10px;
+      background: rgba(79,172,254,0.15); color: #74b9ff;
+      border: 1px solid rgba(79,172,254,0.3);
+    }
+    .update-badge.green { background: rgba(67,233,123,0.15); color: #7bed9f; border-color: rgba(67,233,123,0.3); }
+    .update-badge.hot   { background: rgba(255,71,87,0.15);  color: #ff6b81; border-color: rgba(255,71,87,0.3); }
+
+    .section-block-body { padding: 20px 24px; }
+
+    .feed-list { display: flex; flex-direction: column; gap: 12px; }
+    .feed-item {
+      background: rgba(255,255,255,0.04); border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.07);
+      padding: 14px 16px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .feed-item:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
+    .feed-meta {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 8px; flex-wrap: wrap;
+    }
+    .feed-date { font-size: 0.72rem; color: rgba(255,255,255,0.3); font-weight: 600; letter-spacing: 0.5px; }
+    .feed-tag {
+      font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 8px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .tag-tweet   { background: rgba(79,172,254,0.2);  color: #74b9ff; }
+    .tag-media   { background: rgba(240,147,251,0.2); color: #f093fb; }
+    .tag-invest  { background: rgba(67,233,123,0.2);  color: #7bed9f; }
+    .tag-politic { background: rgba(255,213,42,0.2);  color: #ffd32a; }
+    .tag-activity{ background: rgba(102,126,234,0.2); color: #a29bfe; }
+    .tag-hot     { background: rgba(255,71,87,0.2);   color: #ff6b81; }
+
+    .feed-title { font-size: 0.92rem; font-weight: 700; color: #fff; margin-bottom: 4px; line-height: 1.4; }
+    .feed-title-cn { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 6px; line-height: 1.4; }
+    .feed-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; }
+    .feed-stats {
+      display: flex; gap: 14px; margin-top: 8px; flex-wrap: wrap;
+    }
+    .feed-stat { font-size: 0.72rem; color: rgba(255,255,255,0.3); }
+    .feed-stat span { color: rgba(255,255,255,0.6); font-weight: 600; }
+
+    .data-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin: 14px 0; }
+    .data-table th {
+      padding: 8px 12px; text-align: left; font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted);
+      border-bottom: 1px solid var(--card-border);
+    }
+    .data-table td {
+      padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.04);
+      color: var(--text-muted); line-height: 1.5;
+    }
+    .data-table td:first-child { color: #fff; font-weight: 600; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: rgba(255,255,255,0.03); }
+    .val-green { color: #43e97b !important; font-weight: 700 !important; }
+    .val-yellow { color: #ffd32a !important; }
+    .val-red    { color: #ff6b81 !important; }
+
+    .highlight-box {
+      background: rgba(79,172,254,0.07); border: 1px solid rgba(79,172,254,0.2);
+      border-radius: 12px; padding: 14px 18px; margin: 14px 0 0;
+      font-size: 0.83rem; color: var(--text-muted); line-height: 1.7;
+    }
+    .highlight-box strong { color: #74b9ff; }
+
+    .warn-box {
+      background: rgba(255,165,2,0.07); border: 1px solid rgba(255,165,2,0.2);
+      border-radius: 12px; padding: 14px 18px; margin: 14px 0 0;
+      font-size: 0.83rem; color: rgba(255,210,100,0.7); line-height: 1.7;
+    }
+    .warn-box strong { color: #ffd32a; }
+
+    .source-line {
+      font-size: 0.72rem; color: rgba(255,255,255,0.2);
+      margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .tab-nav {
+      display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px;
+    }
+    .tab-btn {
+      padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+      border: 1px solid var(--card-border); background: rgba(255,255,255,0.05);
+      color: var(--text-muted); cursor: pointer; transition: all 0.2s; text-decoration: none;
+      display: inline-block;
+    }
+    .tab-btn:hover, .tab-btn.active { background: rgba(79,172,254,0.2); color: #74b9ff; border-color: rgba(79,172,254,0.4); }
+
+    .site-footer {
+      text-align: center; padding: 24px; font-size: 0.78rem;
+      color: rgba(255,255,255,0.18); border-top: 1px solid rgba(255,255,255,0.05);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html">🔭 BHGL</a>
+  <span class="sep">/</span>
+  <span class="current">🔭 Musk Tracker</span>
+</nav>
+
+<div class="page-header">
+  <span class="icon">🔭</span>
+  <h1>Musk Tracker</h1>
+  <p>马斯克全方位信息追踪 &nbsp;·&nbsp; 推文 · 采访 · 投资 · 活动 · 政治</p>
+</div>
+
+<div class="content">
+
+  <!-- ══════════════════════════════════════
+       板块一：推文追踪
+  ══════════════════════════════════════ -->
+  <div class="section-block">
+    <div class="section-block-header">
+      <div class="section-block-icon ic-tweet">🐦</div>
+      <div>
+        <div class="section-block-title">推文追踪 · X / Twitter</div>
+        <div class="section-block-sub">中英对照 · 实时抓取 · 重要推文标注</div>
+      </div>
+      <span class="update-badge">实时</span>
+    </div>
+    <div class="section-block-body">
+
+      <div class="tab-nav">
+        <span class="tab-btn active">全部</span>
+        <span class="tab-btn">🔥 热门</span>
+        <span class="tab-btn">⚠️ 敏感</span>
+        <span class="tab-btn">💰 商业</span>
+        <span class="tab-btn">🌟 政治</span>
+        <span class="tab-btn">🚀 SpaceX/xAI</span>
+      </div>
+
+      <div class="feed-list">
+
+        <div class="feed-item">
+          <div class="feed-meta">
+            <span class="feed-date">2026-05-22</span>
+            <span class="feed-tag tag-tweet">推文</span>
+            <span class="feed-tag tag-hot">🔥 热议</span>
+          </div>
+          <div class="feed-title">"The amount of waste in government is beyond what most people can imagine."</div>
+          <div class="feed-title-cn">「政府的浪费程度超乎大多数人的想象。」</div>
+          <div class="feed-desc">马斯克在 DOGE 驻局期间发表，附上一份联邦支出清单截图，暗示数十亿美元被不当使用。</div>
+          <div class="feed-stats">
+            <span class="feed-stat">❤️ <span>248万</span></span>
+            <span class="feed-stat">🔁 <span>89万</span></span>
+            <span class="feed-stat">💬 <span>43万</span></span>
+          </div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-meta">
+            <span class="feed-date">2026-05-20</span>
+            <span class="feed-tag tag-invest">投资</span>
+          </div>
+          <div class="feed-title">"SpaceX S-1 is now public. This is just the beginning."</div>
+          <div class="feed-title-cn">「SpaceX S-1 已公开。这只是开始。」</div>
+          <div class="feed-desc">SpaceX 招股书正式提交当天，马斯克发文庆贺，暗示 IPO 后公司将进入新阶段。</div>
+          <div class="feed-stats">
+            <span class="feed-stat">❤️ <span>312万</span></span>
+            <span class="feed-stat">🔁 <span>120万</span></span>
+          </div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-meta">
+            <span class="feed-date">2026-05-18</span>
+            <span class="feed-tag tag-tweet">推文</span>
+            <span class="feed-tag tag-politic">⚠️ 政治</span>
+          </div>
+          <div class="feed-title">"Democracy requires informed citizens, not an uninformed mob."</div>
+          <div class="feed-title-cn">「民主需要知情的公民，而不是不知情的乌合之众。」</div>
+          <div class="feed-desc">回应媒体对 X 平台审核机制的批评，被多位议员引用于国会听证。</div>
+          <div class="feed-stats">
+            <span class="feed-stat">❤️ <span>198万</span></span>
+            <span class="feed-stat">💬 <span>31万</span></span>
+          </div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-meta">
+            <span class="feed-date">2026-05-15</span>
+            <span class="feed-tag tag-activity">活动</span>
+          </div>
+          <div class="feed-title">"Starship Flight 9 - target NET May 27"</div>
+          <div class="feed-title-cn">「星舰第 9 次飞行——目标：最早 5 月 27 日」</div>
+          <div class="feed-desc">官宣星舰第九次测试飞行时间节点，全飞行剖面目标完整回收助推器和飞船。</div>
+          <div class="feed-stats">
+            <span class="feed-stat">❤️ <span>175万</span></span>
+            <span class="feed-stat">🔁 <span>68万</span></span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="highlight-box">
+        <strong>📌 追踪说明：</strong>本页展示马斯克近期重要推文的中英对照摘要。原始链接请前往 X.com/@elonmusk 查阅。完整推文抓取器见 <a href="../musk-tweets/index.html" style="color:#74b9ff;">旧版推文追踪器</a>。
+      </div>
+      <div class="source-line">数据来源：X.com/@elonmusk · 更新：2026-05-23</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       板块二：采访 & 公开发言
+  ══════════════════════════════════════ -->
+  <div class="section-block">
+    <div class="section-block-header">
+      <div class="section-block-icon ic-media">🎤</div>
+      <div>
+        <div class="section-block-title">采访 · 展现 · 公开发言</div>
+        <div class="section-block-sub">媒体采访 · 国会作证 · 大会演讲 · 播客</div>
+      </div>
+      <span class="update-badge green">2026-05 更新</span>
+    </div>
+    <div class="section-block-body">
+
+      <div class="feed-list">
+
+        <div class="feed-item">
+          <div class="feed-meta">
+            <span class="feed-date">2026-05-14</span>
+            <span class="feed-tag tag-media">采访</span>
+          </div>
+          <div class="feed-title">CNBC 专访：SpaceX IPO 独家解读</div>
+          <div class="feed-title-cn"></div>
+          <div class="feed-desc">马斯克接受 CNBC 独家采访，详解 IPO 定价逻辑、B 类股设计初衷，以及为何选择此时上市。关键语录：「我不是为了钱，是为了让人类成为多星球物种。」</div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-meta">
+            <span class="feed-date">2026-04-28</span>
+            <span class="feed-tag tag-media">播客</span>
+          </div>
+          <div class="feed-title">Joe Rogan Experience #2310</div>
+          <div class="feed-title-cn">Joe Rogan 播客第 2310 期（约 3.5 小时）</div>
+          <div class="feed-desc">话题涵盖 AI 意识、火星移民可行性、DOGE 的下一步，以及他对 OpenAI 诉讼的最新看法。全程无台本，多处引发热议。</div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-meta">
+            <span class="feed-date">2026-04-10</span>
+            <span class="feed-tag tag-activity">国会</span>
+          </div>
+          <div class="feed-title">参议院商业委员会作证：AI 与国家安全</div>
+          <div class="feed-title-cn"></div>
+          <div class="feed-desc">马斯克以 xAI 创始人身份出席，就 Grok 模型的安全机制、与中国 AI 竞争的差距、以及"AI 监管框架必须超越 FDA 模式"发表证词，引发跨党派关注。</div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-meta">
+            <span class="feed-date">2026-03-22</span>
+            <span class="feed-tag tag-media">演讲</span>
+          </div>
+          <div class="feed-title">TED 2026：《The Next Civilization》</div>
+          <div class="feed-title-cn">TED 2026 主旨演讲：《下一个文明》</div>
+          <div class="feed-desc">约 55 分钟演讲，系统阐述 SpaceX 火星计划进度（2029 年载人登火目标）、Neuralink 的医疗突破，以及他对"AI + 人类融合"的最新哲学立场。</div>
+        </div>
+
+      </div>
+
+      <div class="source-line">来源：CNBC · Joe Rogan Experience · C-SPAN · TED · 2026-05-23</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       板块三：投资 & 公司动态
+  ══════════════════════════════════════ -->
+  <div class="section-block">
+    <div class="section-block-header">
+      <div class="section-block-icon ic-invest">💰</div>
+      <div>
+        <div class="section-block-title">投资 · 并购 · 公司动态</div>
+        <div class="section-block-sub">SpaceX · xAI · 特斯拉 · Neuralink · The Boring Company</div>
+      </div>
+      <span class="update-badge green">实时追踪</span>
+    </div>
+    <div class="section-block-body">
+
+      <table class="data-table">
+        <thead><tr><th>公司</th><th>最新动态</th><th>时间</th><th>估值/规模</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>🚀 SpaceX</td>
+            <td>S-1 招股书提交，计划 2026-06-12 纳斯达克上市（SPCX）</td>
+            <td>2026-05</td>
+            <td class="val-green">1.75-2 万亿美元</td>
+          </tr>
+          <tr>
+            <td>🤖 xAI (Grok)</td>
+            <td>被 SpaceX 全股票收购，合并并表；Grok 4.0 发布，推理能力超越 GPT-4o</td>
+            <td>2026-02</td>
+            <td class="val-green">并入 SpaceX</td>
+          </tr>
+          <tr>
+            <td>⚡ 特斯拉 (TSLA)</td>
+            <td>Robotaxi 德州奥斯汀试运营；FSD v14 发布；Q1 营收超预期</td>
+            <td>2026-04</td>
+            <td>市值约 8000 亿美元</td>
+          </tr>
+          <tr>
+            <td>🧠 Neuralink</td>
+            <td>第二例患者 Noland Arbaugh 脑机接口使用满 2 年，展示打字/绘画</td>
+            <td>2026-04</td>
+            <td>估值约 90 亿美元</td>
+          </tr>
+          <tr>
+            <td>🌐 X (Twitter)</td>
+            <td>X Money 金融服务上线；广告收入同比回升 40%；月活用户 6.2 亿</td>
+            <td>2026-05</td>
+            <td>估值约 440 亿美元</td>
+          </tr>
+          <tr>
+            <td>⚙️ The Boring Company</td>
+            <td>拉斯维加斯 Loop 扩线至 4 条，日运客量突破 10 万；迈阿密隧道获批</td>
+            <td>2026-03</td>
+            <td>估值约 70 亿美元</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="highlight-box">
+        <strong>📊 马斯克净资产追踪：</strong>约 <strong>3400 亿美元</strong>（2026-05，Forbes Real-Time）——仍为全球首富。主要构成：特斯拉股权 + SpaceX Pre-IPO 股权 + X 股权。SpaceX 上市后将大幅波动。
+      </div>
+      <div class="source-line">来源：Forbes · Bloomberg · 公司官方披露 · CNBC · 2026-05-23</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       板块四：参与的活动
+  ══════════════════════════════════════ -->
+  <div class="section-block">
+    <div class="section-block-header">
+      <div class="section-block-icon ic-activity">🎯</div>
+      <div>
+        <div class="section-block-title">参与的活动 · 行程</div>
+        <div class="section-block-sub">公开活动 · 会议 · 发布会 · 参观</div>
+      </div>
+      <span class="update-badge">2026-05</span>
+    </div>
+    <div class="section-block-body">
+
+      <div class="feed-list">
+        <div class="feed-item">
+          <div class="feed-meta">
+            <span class="feed-date">2026-05-27（计划）</span>
+            <span class="feed-tag tag-activity">活动</span>
+            <span class="feed-tag tag-hot">🔥</span>
+          </div>
+          <div class="feed-title">星舰第 9 次飞行测试现场观摩</div>
+          <div class="feed-desc">预计在博卡奇卡发射现场，马斯克将出席并发推直播。目标：完整飞行剖面 + 双器回收。</div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-meta">
+            <span class="feed-date">2026-06-08（计划）</span>
+            <span class="feed-tag tag-invest">IPO</span>
+          </div>
+          <div class="feed-title">SpaceX 路演启动（纽约 / 旧金山）</div>
+          <div class="feed-desc">机构路演期间，马斯克预计出席主要机构投资者见面会，是 SpaceX IPO 的核心推销环节。</div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-meta">
+            <span class="feed-date">2026-05-09</span>
+            <span class="feed-tag tag-activity">活动</span>
+          </div>
+          <div class="feed-title">特斯拉股东大会 + Robotaxi 发布</div>
+          <div class="feed-desc">奥斯汀总部举行，宣布 Cybercab 正式量产计划、FSD v14 全球推送时间表，以及 Optimus 机器人产能目标。</div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-meta">
+            <span class="feed-date">2026-04-22</span>
+            <span class="feed-tag tag-politic">政治</span>
+          </div>
+          <div class="feed-title">白宫 DOGE 驻局：100 天总结汇报</div>
+          <div class="feed-desc">马斯克在白宫简报室发布 DOGE 100 天成果：声称已削减 1.7 万亿美元联邦支出，实际可核实约 3200 亿。此发布会随后引发参议院调查。</div>
+        </div>
+      </div>
+
+      <div class="source-line">来源：SpaceX 官方 · 特斯拉官方 · AP News · Reuters · 2026-05-23</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       板块五：政界动态 & 争议
+  ══════════════════════════════════════ -->
+  <div class="section-block">
+    <div class="section-block-header">
+      <div class="section-block-icon ic-politics">🏛️</div>
+      <div>
+        <div class="section-block-title">政界动态 · DOGE · 争议</div>
+        <div class="section-block-sub">政治风向 · 敏感事件 · 立场追踪</div>
+      </div>
+      <span class="update-badge hot">争议</span>
+    </div>
+    <div class="section-block-body">
+
+      <div class="feed-list">
+
+        <div class="feed-item">
+          <div class="feed-meta">
+            <span class="feed-date">2026-05 · 持续</span>
+            <span class="feed-tag tag-politic">DOGE</span>
+          </div>
+          <div class="feed-title">DOGE 驻局合同到期争议</div>
+          <div class="feed-desc">马斯克担任政府效率部（DOGE）顾问的合同于 2026-05-30 到期，白宫表示"视情况续签"。参议院民主党要求全面审计 DOGE 期间的财务影响和合规性。</div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-meta">
+            <span class="feed-date">2026-05-13 · 进行中</span>
+            <span class="feed-tag tag-politic">诉讼</span>
+            <span class="feed-tag tag-hot">🔥</span>
+          </div>
+          <div class="feed-title">Musk vs OpenAI 世纪庭审</div>
+          <div class="feed-desc">陪审团评议进行中（见庭审专页）。马斯克此案被认为是他对 AI 行业最深层的政治信号：他不接受"非营利外壳 + 实质营利"的 AI 公司模式。</div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-meta">
+            <span class="feed-date">2026-04-15</span>
+            <span class="feed-tag tag-politic">政治</span>
+          </div>
+          <div class="feed-title">与特朗普关系出现裂痕？</div>
+          <div class="feed-desc">马斯克在 X 上公开批评特朗普的部分关税政策（"对汽车零部件征税 25% 将损害美国制造业"），随后特朗普发文反驳。双方随后均表示"只是商业分歧"。</div>
+        </div>
+
+        <div class="feed-item">
+          <div class="feed-meta">
+            <span class="feed-date">2026-03-30</span>
+            <span class="feed-tag tag-politic">国际</span>
+          </div>
+          <div class="feed-title">支持德国极右翼 AfD 引发欧洲强烈谴责</div>
+          <div class="feed-desc">马斯克在 AfD 集会上视频发言，称其为"德国唯一的救星"，遭到欧盟多国政要强烈谴责，部分欧洲国家发起抵制特斯拉运动。</div>
+        </div>
+
+      </div>
+
+      <div class="warn-box">
+        <strong>⚠️ 追踪说明：</strong>本板块收录马斯克在政治领域的公开活动和争议。BHGL 仅做信息汇总，不代表任何政治立场。部分内容可能涉及未经证实的报道，请结合原始来源判断。
+      </div>
+      <div class="source-line">来源：AP News · Reuters · Politico · The Guardian · 2026-05-23</div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  BHGL Musk Tracker &nbsp;·&nbsp; 数据来源：X.com · CNBC · AP News · Reuters · Bloomberg &nbsp;·&nbsp; v1.0.0 · 2026-05-23
+</footer>
+
+</body>
+</html>

@@ -157,6 +157,8 @@
     .card-icon.purple { background: linear-gradient(135deg, #667eea, #764ba2); }
     .card-icon.pink   { background: linear-gradient(135deg, #f093fb, #f5576c); }
     .card-icon.green  { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+    .card-icon.cyan   { background: linear-gradient(135deg, #00f2fe, #4facfe); }
+    .card-icon.orange { background: linear-gradient(135deg, #ffd32a, #ff9f1a); }
 
     .card-title-block { flex: 1; }
     .card-num {
@@ -189,6 +191,7 @@
     .badge-hot  { background: rgba(255,71,87,0.2);  color: #ff6b81; border: 1px solid rgba(255,71,87,0.3); }
     .badge-new  { background: rgba(46,213,115,0.2); color: #7bed9f; border: 1px solid rgba(46,213,115,0.3); }
     .badge-live { background: rgba(79,172,254,0.2); color: #74b9ff; border: 1px solid rgba(79,172,254,0.3); }
+    .badge-cyan { background: rgba(0,242,254,0.15); color: #00f2fe; border: 1px solid rgba(0,242,254,0.3); }
 
     /* ─── Updates List ─── */
     .updates-list {
@@ -262,6 +265,7 @@
     .btn-primary.purple { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; }
     .btn-primary.pink   { background: linear-gradient(135deg, #f093fb, #f5576c); color: #fff; }
     .btn-primary.green  { background: linear-gradient(135deg, #43e97b, #38f9d7); color: #0a2010; }
+    .btn-primary.cyan   { background: linear-gradient(135deg, #00f2fe, #4facfe); color: #0a1628; }
     .btn-primary:hover  { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.35); filter: brightness(1.08); }
 
     .btn-ghost {
@@ -316,6 +320,8 @@
     .sections .section-card:nth-child(1) { animation: fadeInUp 0.5s ease 0.1s both; }
     .sections .section-card:nth-child(2) { animation: fadeInUp 0.5s ease 0.2s both; }
     .sections .section-card:nth-child(3) { animation: fadeInUp 0.5s ease 0.3s both; }
+    .sections .section-card:nth-child(4) { animation: fadeInUp 0.5s ease 0.4s both; }
+    .sections .section-card:nth-child(5) { animation: fadeInUp 0.5s ease 0.5s both; }
 
     /* ─── Responsive ─── */
     @media (max-width: 700px) {
@@ -335,76 +341,75 @@
   <p class="tagline">Musk Universe Tracker &nbsp;·&nbsp; 实时追踪马斯克宇宙动态</p>
   <div class="last-updated">
     <span class="dot-live"></span>
-    最后更新：2026-05-18 &nbsp;|&nbsp; 数据来源：CNBC · 36Kr · 新浪财经 · AP News
+    最后更新：2026-05-23 &nbsp;|&nbsp; 数据来源：CNBC · 36Kr · 新浪财经 · AP News
   </div>
 </header>
 
 <!-- ─── Stats Bar ─── -->
 <div class="stats-bar">
-  <div class="stat-chip">🐦 <span class="val">Musk 推文</span>&nbsp;持续追踪中</div>
+  <div class="stat-chip">🔭 <span class="val">Musk 全动态</span>&nbsp;追踪中</div>
   <div class="stat-chip">💰 <span class="val">SpaceX IPO</span>&nbsp;2026-06-12 纳斯达克</div>
   <div class="stat-chip">⚖️ <span class="val">庭审</span>&nbsp;陪审团评议进行中</div>
-  <div class="stat-chip">🤖 <span class="val">Anthropic 估值</span>&nbsp;1.2万亿美元</div>
+  <div class="stat-chip">⚛️ <span class="val">量子计算</span>&nbsp;手机端突破进行时</div>
 </div>
 
 <!-- ─── Cards Grid ─── -->
 <div class="sections">
 
-  <!-- ── Card 1: Musk Tweets ── -->
+  <!-- ── Card 1: Musk Tracker ── -->
   <div class="section-card">
     <div class="card-header">
-      <div class="card-icon blue">🐦</div>
+      <div class="card-icon blue">🔭</div>
       <div class="card-title-block">
-        <div class="card-num">01 · Musk Tweets</div>
-        <div class="card-title">马斯克推特追踪器</div>
-        <div class="card-sub">实时抓取 · 中英对照 · 视频字幕</div>
+        <div class="card-num">01 · Musk Tracker</div>
+        <div class="card-title">马斯克全方位信息追踪</div>
+        <div class="card-sub">推文 · 采访 · 活动 · 投资 · 观点</div>
       </div>
       <span class="badge badge-live">Live</span>
     </div>
 
     <div class="highlight-pill">
-      🕘 每日 09:00 &amp; 21:00 自动抓取 &nbsp;|&nbsp; <strong>GitHub Pages 托管</strong>
+      🔍 推文 + 采访 + 投资 + 活动 一站式追踪 &nbsp;|&nbsp; <strong>每日更新</strong>
     </div>
 
     <div class="updates-list">
       <div class="update-item hot">
-        <span class="update-icon">🔥</span>
+        <span class="update-icon">🐦</span>
         <div class="update-body">
-          <div class="update-title">推文实时中英对照</div>
+          <div class="update-title">实时推文追踪（中英对照）</div>
           <div class="update-desc">自动翻译 · 点赞/转发/评论数 · 图片视频一并展示</div>
         </div>
         <span class="update-date">最热</span>
       </div>
       <div class="update-item new">
-        <span class="update-icon">🎬</span>
+        <span class="update-icon">🎤</span>
         <div class="update-body">
-          <div class="update-title">视频 + HLS 字幕播放</div>
-          <div class="update-desc">yt-dlp 获取原始 URL，hls.js 前端播放，自动生成中英字幕块</div>
+          <div class="update-title">采访 · 展现 · 公开应要全记录</div>
+          <div class="update-desc">CNBC/Fox/TED/数边社区采访 · 国会证词 · 装股大会发言</div>
         </div>
-        <span class="update-date">v1.0</span>
+        <span class="update-date">采访</span>
       </div>
       <div class="update-item info">
-        <span class="update-icon">🔍</span>
+        <span class="update-icon">💰</span>
         <div class="update-body">
-          <div class="update-title">搜索 · 筛选 · 已读标记</div>
-          <div class="update-desc">支持中英文搜索，按今天/本周/本月筛选，已读状态本地存储</div>
+          <div class="update-title">投资 · 并购 · 公司动态</div>
+          <div class="update-desc">SpaceX · xAI · 特斯拉 · Neuralink · The Boring Company 最新进展</div>
         </div>
-        <span class="update-date">功能</span>
+        <span class="update-date">投资</span>
       </div>
-      <div class="update-item info">
-        <span class="update-icon">📌</span>
+      <div class="update-item warn">
+        <span class="update-icon">🌟</span>
         <div class="update-body">
-          <div class="update-title">书签工具 · 快捷键</div>
-          <div class="update-desc">浏览器书签一键抓取，/ 键聚焦搜索，Esc 重置筛选</div>
+          <div class="update-title">政界活动 · DOGE · 政治风向</div>
+          <div class="update-desc">敏感推文标记 · DOGE 驻局动态 · 与各领导人互动记录</div>
         </div>
-        <span class="update-date">工具</span>
+        <span class="update-date">政治</span>
       </div>
     </div>
 
     <div class="card-divider"></div>
     <div class="card-cta" style="margin-top:16px;">
-      <a href="../index.html" class="btn-primary blue">🐦 进入推文追踪器</a>
-      <a href="https://xh-20-22.github.io/musk-tweets/" target="_blank" class="btn-ghost" title="GitHub Pages 线上版">🌐</a>
+      <a href="musk-tracker.html" class="btn-primary blue">🔭 进入马斯克追踪器</a>
     </div>
   </div>
 
@@ -415,7 +420,7 @@
       <div class="card-title-block">
         <div class="card-num">02 · IPO Watch</div>
         <div class="card-title">SpaceX · Anthropic · OpenAI</div>
-        <div class="card-sub">史上最大 IPO 倒计时 · 估值与治理</div>
+        <div class="card-sub">史上最大 IPO 倒计时 · 普通人参与指南</div>
       </div>
       <span class="badge badge-hot">🔥 热</span>
     </div>
@@ -428,7 +433,7 @@
       <div class="update-item hot">
         <span class="update-icon">🚀</span>
         <div class="update-body">
-          <div class="update-title">SpaceX IPO 招股书最快本周披露</div>
+          <div class="update-title">SpaceX IPO 招股书已披露，倒计时开始</div>
           <div class="update-desc">募资 700-750亿美元，估值 1.75-2万亿，打破沙特阿美 IPO 纪录</div>
         </div>
         <span class="update-date">05-18</span>
@@ -450,18 +455,18 @@
         <span class="update-date">05-17</span>
       </div>
       <div class="update-item info">
-        <span class="update-icon">💥</span>
+        <span class="update-icon">🧑‍💼</span>
         <div class="update-body">
-          <div class="update-title">Cerebras 上市首日暴涨 68%，AI IPO 热潮开启</div>
-          <div class="update-desc">185美元发行，311美元收盘，募资55.5亿，市值950亿美元</div>
+          <div class="update-title">新增：普通人如何参与三大 IPO？</div>
+          <div class="update-desc">4 条路径详解：美股账户 · ETF · A股概念 · 链上 Pre-IPO</div>
         </div>
-        <span class="update-date">05-14</span>
+        <span class="update-date">指南</span>
       </div>
     </div>
 
     <div class="card-divider"></div>
     <div class="card-cta" style="margin-top:16px;">
-      <a href="ipo.html" class="btn-primary green">🚀 查看 IPO 完整进展</a>
+      <a href="ipo.html" class="btn-primary green">🚀 查看 IPO 完整进展（含参与指南）</a>
     </div>
   </div>
 
@@ -522,11 +527,68 @@
     </div>
   </div>
 
+  <!-- ── Card 4: Quantum Computing ── -->
+  <div class="section-card">
+    <div class="card-header">
+      <div class="card-icon cyan">⚛️</div>
+      <div class="card-title-block">
+        <div class="card-num">04 · Quantum Watch</div>
+        <div class="card-title">手机量子计算 · 前沿追踪</div>
+        <div class="card-sub">移动端量子 · 政策 · 参与机会 · 突破进展</div>
+      </div>
+      <span class="badge badge-cyan">🔬 新</span>
+    </div>
+
+    <div class="highlight-pill">
+      ⚛️ <strong>2026 量子元年</strong>&nbsp;|&nbsp; 多国加速量子手机/终端布局
+    </div>
+
+    <div class="updates-list">
+      <div class="update-item hot">
+        <span class="update-icon">📱</span>
+        <div class="update-body">
+          <div class="update-title">手机量子计算：商用临界点</div>
+          <div class="update-desc">中兴/华为/三星均在研量子安全手机芯片；量子随机数发生器（QRNG）已进入三星 Galaxy 等旗舰机型</div>
+        </div>
+        <span class="update-date">最热</span>
+      </div>
+      <div class="update-item new">
+        <span class="update-icon">🇺🇸</span>
+        <div class="update-body">
+          <div class="update-title">美国《国家量子计划法案》续签</div>
+          <div class="update-desc">2025-2030 年拨款 28 亿美元；IBM/Google/IonQ 加速量子云服务布局</div>
+        </div>
+        <span class="update-date">政策</span>
+      </div>
+      <div class="update-item info">
+        <span class="update-icon">🇨🇳</span>
+        <div class="update-body">
+          <div class="update-title">中国量子通信骨干网全面建成</div>
+          <div class="update-desc">京沪量子干线 + 墨子号卫星组网；国盾量子/科大国盾等 A 股标的持续受益</div>
+        </div>
+        <span class="update-date">进展</span>
+      </div>
+      <div class="update-item info">
+        <span class="update-icon">💡</span>
+        <div class="update-body">
+          <div class="update-title">普通人如何参与量子计算投资？</div>
+          <div class="update-desc">IonQ（IONQ）· Rigetti（RGTI）· D-Wave（QBTS）美股可直接买入；A 股：国盾量子、光迅科技等</div>
+        </div>
+        <span class="update-date">机会</span>
+      </div>
+    </div>
+
+    <div class="card-divider"></div>
+    <div class="card-cta" style="margin-top:16px;">
+      <a href="quantum.html" class="btn-primary cyan">⚛️ 查看量子计算完整追踪</a>
+    </div>
+  </div>
+
 </div>
 
 <!-- ─── Footer ─── -->
 <footer class="site-footer">
-  BHGL Musk Universe Tracker &nbsp;·&nbsp; 数据来源：CNBC · Bloomberg · 36Kr · 新浪财经 · AP News &nbsp;·&nbsp; v2.0.0 · 2026-05-18
+  BHGL Musk Universe Tracker &nbsp;·&nbsp; 数据来源：CNBC · Bloomberg · 36Kr · 新浪财经 · AP News &nbsp;·&nbsp; v3.0.0 · 2026-05-23
 </footer>
 
 </body>
